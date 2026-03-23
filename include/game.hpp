@@ -19,6 +19,7 @@ private:
     void ResetDialogueState();
     void StartDialogue(const DialogueData* dialogueData);
     void AdvanceDialoguePage();
+    void CloseDialogue();
 
 private:
     enum class DialogueMode
@@ -40,4 +41,5 @@ private:
     std::vector<const char*> m_currentPages{};
     int m_currentPageIndex{0};
     int m_selectedChoiceIndex{0};
+    const char* m_selectedChoiceText{nullptr};
 };
