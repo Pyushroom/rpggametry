@@ -21,6 +21,7 @@ set(SOURCES
     src/world.cpp
     src/player.cpp
     src/scene.cpp
+    src/game.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

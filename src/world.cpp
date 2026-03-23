@@ -97,77 +97,67 @@ void World::DrawAvailableTransitions(const SceneCoord& currentCoord) const
 
 void World::CreateScenes()
 {
-    m_scenes.push_back(CreateStartScene());
-    m_scenes.push_back(CreateLeftScene());
-    m_scenes.push_back(CreateRightScene());
-    m_scenes.push_back(CreateUpScene());
-    m_scenes.push_back(CreateDownScene());
+    AddScene(SceneDefinition{
+        SceneCoord{0, 0},
+        GREEN,
+        "Zielona Polana",
+        {
+            Rectangle{180.0f, 140.0f, 140.0f, 40.0f},
+            Rectangle{500.0f, 220.0f, 220.0f, 40.0f},
+            Rectangle{320.0f, 420.0f, 280.0f, 40.0f}
+        }
+    });
+
+    AddScene(SceneDefinition{
+        SceneCoord{-1, 0},
+        BLUE,
+        "Blekitne Pole",
+        {
+            Rectangle{240.0f, 120.0f, 40.0f, 260.0f},
+            Rectangle{520.0f, 260.0f, 180.0f, 40.0f}
+        }
+    });
+
+    AddScene(SceneDefinition{
+        SceneCoord{1, 0},
+        ORANGE,
+        "Pomaranczowa Droga",
+        {
+            Rectangle{180.0f, 300.0f, 520.0f, 40.0f},
+            Rectangle{700.0f, 160.0f, 40.0f, 220.0f}
+        }
+    });
+
+    AddScene(SceneDefinition{
+        SceneCoord{0, -1},
+        PURPLE,
+        "Fioletowe Wzgorze",
+        {
+            Rectangle{220.0f, 180.0f, 120.0f, 40.0f},
+            Rectangle{420.0f, 180.0f, 120.0f, 40.0f},
+            Rectangle{620.0f, 180.0f, 120.0f, 40.0f}
+        }
+    });
+
+    AddScene(SceneDefinition{
+        SceneCoord{0, 1},
+        LIME,
+        "Dolna Laka",
+        {
+            Rectangle{160.0f, 180.0f, 40.0f, 280.0f},
+            Rectangle{360.0f, 120.0f, 40.0f, 280.0f},
+            Rectangle{560.0f, 180.0f, 40.0f, 280.0f}
+        }
+    });
 }
 
-Scene World::CreateStartScene() const
+void World::AddScene(const SceneDefinition& definition)
 {
     Scene scene{};
-    scene.coord = SceneCoord{0, 0};
-    scene.backgroundColor = GREEN;
-    scene.name = "Zielona Polana";
+    scene.coord = definition.coord;
+    scene.backgroundColor = definition.backgroundColor;
+    scene.name = definition.name;
+    scene.walls = definition.walls;
 
-    scene.walls.push_back(Rectangle{180.0f, 140.0f, 140.0f, 40.0f});
-    scene.walls.push_back(Rectangle{500.0f, 220.0f, 220.0f, 40.0f});
-    scene.walls.push_back(Rectangle{320.0f, 420.0f, 280.0f, 40.0f});
-
-    return scene;
-}
-
-Scene World::CreateLeftScene() const
-{
-    Scene scene{};
-    scene.coord = SceneCoord{-1, 0};
-    scene.backgroundColor = BLUE;
-    scene.name = "Blekitne Pole";
-
-    scene.walls.push_back(Rectangle{240.0f, 120.0f, 40.0f, 260.0f});
-    scene.walls.push_back(Rectangle{520.0f, 260.0f, 180.0f, 40.0f});
-
-    return scene;
-}
-
-Scene World::CreateRightScene() const
-{
-    Scene scene{};
-    scene.coord = SceneCoord{1, 0};
-    scene.backgroundColor = ORANGE;
-    scene.name = "Pomaranczowa Droga";
-
-    scene.walls.push_back(Rectangle{180.0f, 300.0f, 520.0f, 40.0f});
-    scene.walls.push_back(Rectangle{700.0f, 160.0f, 40.0f, 220.0f});
-
-    return scene;
-}
-
-Scene World::CreateUpScene() const
-{
-    Scene scene{};
-    scene.coord = SceneCoord{0, -1};
-    scene.backgroundColor = PURPLE;
-    scene.name = "Fioletowe Wzgorze";
-
-    scene.walls.push_back(Rectangle{220.0f, 180.0f, 120.0f, 40.0f});
-    scene.walls.push_back(Rectangle{420.0f, 180.0f, 120.0f, 40.0f});
-    scene.walls.push_back(Rectangle{620.0f, 180.0f, 120.0f, 40.0f});
-
-    return scene;
-}
-
-Scene World::CreateDownScene() const
-{
-    Scene scene{};
-    scene.coord = SceneCoord{0, 1};
-    scene.backgroundColor = LIME;
-    scene.name = "Dolna Laka";
-
-    scene.walls.push_back(Rectangle{160.0f, 180.0f, 40.0f, 280.0f});
-    scene.walls.push_back(Rectangle{360.0f, 120.0f, 40.0f, 280.0f});
-    scene.walls.push_back(Rectangle{560.0f, 180.0f, 40.0f, 280.0f});
-
-    return scene;
+    m_scenes.push_back(scene);
 }

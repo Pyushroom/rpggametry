@@ -1,11 +1,6 @@
 #include "player.hpp"
 
-namespace
-{
-constexpr int ScreenWidth = 960;
-constexpr int ScreenHeight = 640;
-constexpr float SpawnMargin = 64.0f;
-}
+#include "config.hpp"
 
 void ClampPlayerToScreen(Player& player)
 {
@@ -19,14 +14,14 @@ void ClampPlayerToScreen(Player& player)
         player.rect.y = 0.0f;
     }
 
-    if (player.rect.x + player.rect.width > static_cast<float>(ScreenWidth))
+    if (player.rect.x + player.rect.width > static_cast<float>(Config::ScreenWidth))
     {
-        player.rect.x = static_cast<float>(ScreenWidth) - player.rect.width;
+        player.rect.x = static_cast<float>(Config::ScreenWidth) - player.rect.width;
     }
 
-    if (player.rect.y + player.rect.height > static_cast<float>(ScreenHeight))
+    if (player.rect.y + player.rect.height > static_cast<float>(Config::ScreenHeight))
     {
-        player.rect.y = static_cast<float>(ScreenHeight) - player.rect.height;
+        player.rect.y = static_cast<float>(Config::ScreenHeight) - player.rect.height;
     }
 }
 
@@ -63,9 +58,9 @@ void MovePlayer(Player& player, const Scene& scene, float deltaTime)
         nextX.x = 0.0f;
     }
 
-    if (nextX.x + nextX.width > static_cast<float>(ScreenWidth))
+    if (nextX.x + nextX.width > static_cast<float>(Config::ScreenWidth))
     {
-        nextX.x = static_cast<float>(ScreenWidth) - nextX.width;
+        nextX.x = static_cast<float>(Config::ScreenWidth) - nextX.width;
     }
 
     if (!CollidesWithWalls(nextX, scene))
@@ -81,9 +76,9 @@ void MovePlayer(Player& player, const Scene& scene, float deltaTime)
         nextY.y = 0.0f;
     }
 
-    if (nextY.y + nextY.height > static_cast<float>(ScreenHeight))
+    if (nextY.y + nextY.height > static_cast<float>(Config::ScreenHeight))
     {
-        nextY.y = static_cast<float>(ScreenHeight) - nextY.height;
+        nextY.y = static_cast<float>(Config::ScreenHeight) - nextY.height;
     }
 
     if (!CollidesWithWalls(nextY, scene))
@@ -97,16 +92,16 @@ void SetPlayerPositionAfterTransition(Player& player, Direction direction)
     switch (direction)
     {
         case Direction::Left:
-            player.rect.x = static_cast<float>(ScreenWidth) - player.rect.width - SpawnMargin;
+            player.rect.x = static_cast<float>(Config::ScreenWidth) - player.rect.width - Config::PlayerSpawnMargin;
             break;
         case Direction::Right:
-            player.rect.x = SpawnMargin;
+            player.rect.x = Config::PlayerSpawnMargin;
             break;
         case Direction::Up:
-            player.rect.y = static_cast<float>(ScreenHeight) - player.rect.height - SpawnMargin;
+            player.rect.y = static_cast<float>(Config::ScreenHeight) - player.rect.height - Config::PlayerSpawnMargin;
             break;
         case Direction::Down:
-            player.rect.y = SpawnMargin;
+            player.rect.y = Config::PlayerSpawnMargin;
             break;
     }
 

@@ -25,13 +25,17 @@ public:
     void DrawAvailableTransitions(const SceneCoord& currentCoord) const;
 
 private:
+    struct SceneDefinition
+    {
+        SceneCoord coord{};
+        Color backgroundColor{};
+        const char* name{};
+        std::vector<Rectangle> walls{};
+    };
+
+private:
     std::vector<Scene> m_scenes;
 
     void CreateScenes();
-
-    Scene CreateStartScene() const;
-    Scene CreateLeftScene() const;
-    Scene CreateRightScene() const;
-    Scene CreateUpScene() const;
-    Scene CreateDownScene() const;
+    void AddScene(const SceneDefinition& definition);
 };

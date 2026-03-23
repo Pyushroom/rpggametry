@@ -1,5 +1,7 @@
 #include "scene.hpp"
 
+#include "config.hpp"
+
 bool SceneCoord::operator==(const SceneCoord& other) const
 {
     return x == other.x && y == other.y;
@@ -7,59 +9,41 @@ bool SceneCoord::operator==(const SceneCoord& other) const
 
 Rectangle MakeLeftTransition()
 {
-    constexpr int screenHeight = 640;
-    constexpr float transitionLength = 120.0f;
-    constexpr float transitionThickness = 24.0f;
-
     return Rectangle{
         0.0f,
-        (static_cast<float>(screenHeight) - transitionLength) * 0.5f,
-        transitionThickness,
-        transitionLength
+        (static_cast<float>(Config::ScreenHeight) - Config::TransitionLength) * 0.5f,
+        Config::TransitionThickness,
+        Config::TransitionLength
     };
 }
 
 Rectangle MakeRightTransition()
 {
-    constexpr int screenWidth = 960;
-    constexpr int screenHeight = 640;
-    constexpr float transitionLength = 120.0f;
-    constexpr float transitionThickness = 24.0f;
-
     return Rectangle{
-        static_cast<float>(screenWidth) - transitionThickness,
-        (static_cast<float>(screenHeight) - transitionLength) * 0.5f,
-        transitionThickness,
-        transitionLength
+        static_cast<float>(Config::ScreenWidth) - Config::TransitionThickness,
+        (static_cast<float>(Config::ScreenHeight) - Config::TransitionLength) * 0.5f,
+        Config::TransitionThickness,
+        Config::TransitionLength
     };
 }
 
 Rectangle MakeUpTransition()
 {
-    constexpr int screenWidth = 960;
-    constexpr float transitionLength = 120.0f;
-    constexpr float transitionThickness = 24.0f;
-
     return Rectangle{
-        (static_cast<float>(screenWidth) - transitionLength) * 0.5f,
+        (static_cast<float>(Config::ScreenWidth) - Config::TransitionLength) * 0.5f,
         0.0f,
-        transitionLength,
-        transitionThickness
+        Config::TransitionLength,
+        Config::TransitionThickness
     };
 }
 
 Rectangle MakeDownTransition()
 {
-    constexpr int screenWidth = 960;
-    constexpr int screenHeight = 640;
-    constexpr float transitionLength = 120.0f;
-    constexpr float transitionThickness = 24.0f;
-
     return Rectangle{
-        (static_cast<float>(screenWidth) - transitionLength) * 0.5f,
-        static_cast<float>(screenHeight) - transitionThickness,
-        transitionLength,
-        transitionThickness
+        (static_cast<float>(Config::ScreenWidth) - Config::TransitionLength) * 0.5f,
+        static_cast<float>(Config::ScreenHeight) - Config::TransitionThickness,
+        Config::TransitionLength,
+        Config::TransitionThickness
     };
 }
 
