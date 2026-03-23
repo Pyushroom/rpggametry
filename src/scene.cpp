@@ -87,12 +87,27 @@ void DrawSceneObjects(const Scene& scene)
                 );
             }
         }
+        else if (object.type == SceneObjectType::Tree)
+        {
+            const Rectangle trunk{
+                object.rect.x + object.rect.width * 0.4f,
+                object.rect.y + object.rect.height * 0.7f,
+                object.rect.width * 0.2f,
+                object.rect.height * 0.3f
+            };
+
+            DrawRectangleRec(trunk, BROWN);
+        }
+        else if (object.type == SceneObjectType::HouseEntrance)
+        {
+            DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
+        }
     }
 }
 
 void DrawSceneInfo(const Scene& scene)
 {
-    DrawRectangle(12, 12, 380, 110, Fade(BLACK, 0.45f));
+    DrawRectangle(12, 12, 420, 110, Fade(BLACK, 0.45f));
 
     DrawText(scene.name, 24, 24, 28, WHITE);
     DrawText(
@@ -102,45 +117,75 @@ void DrawSceneInfo(const Scene& scene)
         22,
         WHITE
     );
-    DrawText("Obiekty: wall, rock, ladder, decoration", 24, 88, 20, WHITE);
+    DrawText("Typy: wall, rock, ladder, bush, tree, house", 24, 88, 20, WHITE);
 }
 
-SceneObject MakeWall(Rectangle rect)
+SceneObject MakeWall(float x, float y, float width, float height)
 {
     return SceneObject{
         SceneObjectType::Wall,
-        rect,
+        Rectangle{x, y, width, height},
         true,
         DARKGRAY
     };
 }
 
-SceneObject MakeRock(Rectangle rect)
+SceneObject MakeRock(float x, float y, float width, float height)
 {
     return SceneObject{
         SceneObjectType::Rock,
-        rect,
+        Rectangle{x, y, width, height},
         true,
         GRAY
     };
 }
 
-SceneObject MakeLadder(Rectangle rect)
+SceneObject MakeLadder(float x, float y, float width, float height)
 {
     return SceneObject{
         SceneObjectType::Ladder,
-        rect,
+        Rectangle{x, y, width, height},
         false,
         BROWN
     };
 }
 
-SceneObject MakeDecoration(Rectangle rect, Color color)
+SceneObject MakeDecoration(float x, float y, float width, float height, Color color)
 {
     return SceneObject{
         SceneObjectType::Decoration,
-        rect,
+        Rectangle{x, y, width, height},
         false,
         color
+    };
+}
+
+SceneObject MakeBush(float x, float y, float width, float height)
+{
+    return SceneObject{
+        SceneObjectType::Bush,
+        Rectangle{x, y, width, height},
+        true,
+        DARKGREEN
+    };
+}
+
+SceneObject MakeTree(float x, float y, float width, float height)
+{
+    return SceneObject{
+        SceneObjectType::Tree,
+        Rectangle{x, y, width, height},
+        true,
+        GREEN
+    };
+}
+
+SceneObject MakeHouseEntrance(float x, float y, float width, float height)
+{
+    return SceneObject{
+        SceneObjectType::HouseEntrance,
+        Rectangle{x, y, width, height},
+        false,
+        MAROON
     };
 }

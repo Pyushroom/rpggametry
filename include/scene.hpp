@@ -25,7 +25,10 @@ enum class SceneObjectType
     Wall,
     Rock,
     Ladder,
-    Decoration
+    Decoration,
+    Bush,
+    Tree,
+    HouseEntrance
 };
 
 struct SceneObject
@@ -54,8 +57,10 @@ struct Scene
 void DrawSceneObjects(const Scene& scene);
 void DrawSceneInfo(const Scene& scene);
 
-// helpers
-[[nodiscard]] SceneObject MakeWall(Rectangle rect);
-[[nodiscard]] SceneObject MakeRock(Rectangle rect);
-[[nodiscard]] SceneObject MakeLadder(Rectangle rect);
-[[nodiscard]] SceneObject MakeDecoration(Rectangle rect, Color color);
+[[nodiscard]] SceneObject MakeWall(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeRock(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeLadder(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeDecoration(float x, float y, float width, float height, Color color);
+[[nodiscard]] SceneObject MakeBush(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeTree(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeHouseEntrance(float x, float y, float width, float height);

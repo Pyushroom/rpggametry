@@ -102,10 +102,13 @@ void World::CreateScenes()
         GREEN,
         "Zielona Polana",
         {
-            MakeWall(Rectangle{180.0f, 140.0f, 140.0f, 40.0f}),
-            MakeRock(Rectangle{500.0f, 220.0f, 70.0f, 70.0f}),
-            MakeRock(Rectangle{620.0f, 220.0f, 100.0f, 60.0f}),
-            MakeDecoration(Rectangle{320.0f, 420.0f, 280.0f, 40.0f}, DARKGREEN)
+            MakeWall(180.0f, 140.0f, 140.0f, 40.0f),
+            MakeRock(500.0f, 220.0f, 70.0f, 70.0f),
+            MakeRock(620.0f, 220.0f, 100.0f, 60.0f),
+            MakeBush(320.0f, 420.0f, 80.0f, 60.0f),
+            MakeBush(430.0f, 420.0f, 80.0f, 60.0f),
+            MakeTree(760.0f, 120.0f, 90.0f, 140.0f),
+            MakeHouseEntrance(80.0f, 260.0f, 60.0f, 90.0f)
         }
     });
 
@@ -114,9 +117,11 @@ void World::CreateScenes()
         BLUE,
         "Blekitne Pole",
         {
-            MakeWall(Rectangle{240.0f, 120.0f, 40.0f, 260.0f}),
-            MakeLadder(Rectangle{520.0f, 220.0f, 36.0f, 120.0f}),
-            MakeRock(Rectangle{620.0f, 260.0f, 80.0f, 60.0f})
+            MakeWall(240.0f, 120.0f, 40.0f, 260.0f),
+            MakeLadder(520.0f, 220.0f, 36.0f, 120.0f),
+            MakeRock(620.0f, 260.0f, 80.0f, 60.0f),
+            MakeBush(120.0f, 420.0f, 100.0f, 50.0f),
+            MakeTree(760.0f, 180.0f, 100.0f, 150.0f)
         }
     });
 
@@ -125,9 +130,11 @@ void World::CreateScenes()
         ORANGE,
         "Pomaranczowa Droga",
         {
-            MakeWall(Rectangle{180.0f, 300.0f, 520.0f, 40.0f}),
-            MakeWall(Rectangle{700.0f, 160.0f, 40.0f, 220.0f}),
-            MakeDecoration(Rectangle{120.0f, 160.0f, 40.0f, 40.0f}, GOLD)
+            MakeWall(180.0f, 300.0f, 520.0f, 40.0f),
+            MakeWall(700.0f, 160.0f, 40.0f, 220.0f),
+            MakeDecoration(120.0f, 160.0f, 40.0f, 40.0f, GOLD),
+            MakeBush(120.0f, 380.0f, 90.0f, 50.0f),
+            MakeHouseEntrance(780.0f, 420.0f, 70.0f, 100.0f)
         }
     });
 
@@ -136,10 +143,12 @@ void World::CreateScenes()
         PURPLE,
         "Fioletowe Wzgorze",
         {
-            MakeRock(Rectangle{220.0f, 180.0f, 120.0f, 40.0f}),
-            MakeRock(Rectangle{420.0f, 180.0f, 120.0f, 40.0f}),
-            MakeRock(Rectangle{620.0f, 180.0f, 120.0f, 40.0f}),
-            MakeLadder(Rectangle{450.0f, 340.0f, 36.0f, 120.0f})
+            MakeRock(220.0f, 180.0f, 120.0f, 40.0f),
+            MakeRock(420.0f, 180.0f, 120.0f, 40.0f),
+            MakeRock(620.0f, 180.0f, 120.0f, 40.0f),
+            MakeLadder(450.0f, 340.0f, 36.0f, 120.0f),
+            MakeTree(120.0f, 120.0f, 100.0f, 150.0f),
+            MakeTree(760.0f, 120.0f, 100.0f, 150.0f)
         }
     });
 
@@ -148,10 +157,12 @@ void World::CreateScenes()
         LIME,
         "Dolna Laka",
         {
-            MakeWall(Rectangle{160.0f, 180.0f, 40.0f, 280.0f}),
-            MakeWall(Rectangle{360.0f, 120.0f, 40.0f, 280.0f}),
-            MakeWall(Rectangle{560.0f, 180.0f, 40.0f, 280.0f}),
-            MakeDecoration(Rectangle{700.0f, 120.0f, 120.0f, 120.0f}, GREEN)
+            MakeWall(160.0f, 180.0f, 40.0f, 280.0f),
+            MakeWall(360.0f, 120.0f, 40.0f, 280.0f),
+            MakeWall(560.0f, 180.0f, 40.0f, 280.0f),
+            MakeBush(700.0f, 120.0f, 120.0f, 80.0f),
+            MakeBush(720.0f, 240.0f, 100.0f, 70.0f),
+            MakeHouseEntrance(100.0f, 500.0f, 70.0f, 90.0f)
         }
     });
 }
