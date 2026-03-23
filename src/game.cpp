@@ -76,6 +76,21 @@ void Game::Update(float deltaTime)
             m_transitionCooldown = Config::TransitionCooldownTime;
         }
     }
+
+    if (IsKeyPressed(KEY_E))
+    {
+        const SceneObject* interactable =
+            FindInteractableObject(m_player.rect, *currentScene);
+
+        if (interactable != nullptr)
+        {
+            if (interactable->type == SceneObjectType::HouseEntrance)
+            {
+                // na razie debug:
+                TraceLog(LOG_INFO, "Wszedles do domu!");
+            }
+        }
+    }
 }
 
 void Game::Draw() const
@@ -84,6 +99,13 @@ void Game::Draw() const
     if (currentScene == nullptr)
     {
         return;
+    }
+
+    const SceneObject* interactable =
+    FindInteractableObject(m_player.rect, *currentScene);
+    if (interactable != nullptr)
+    {
+        DrawText("Nacisnij E", 20, 100, 24, YELLOW);
     }
 
     BeginDrawing();

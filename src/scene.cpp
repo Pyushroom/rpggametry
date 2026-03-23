@@ -126,6 +126,7 @@ SceneObject MakeWall(float x, float y, float width, float height)
         SceneObjectType::Wall,
         Rectangle{x, y, width, height},
         true,
+        false,
         DARKGRAY
     };
 }
@@ -136,6 +137,7 @@ SceneObject MakeRock(float x, float y, float width, float height)
         SceneObjectType::Rock,
         Rectangle{x, y, width, height},
         true,
+        false,
         GRAY
     };
 }
@@ -145,6 +147,7 @@ SceneObject MakeLadder(float x, float y, float width, float height)
     return SceneObject{
         SceneObjectType::Ladder,
         Rectangle{x, y, width, height},
+        false,
         false,
         BROWN
     };
@@ -156,6 +159,7 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         SceneObjectType::Decoration,
         Rectangle{x, y, width, height},
         false,
+        false,
         color
     };
 }
@@ -166,6 +170,7 @@ SceneObject MakeBush(float x, float y, float width, float height)
         SceneObjectType::Bush,
         Rectangle{x, y, width, height},
         true,
+        false,
         DARKGREEN
     };
 }
@@ -176,6 +181,7 @@ SceneObject MakeTree(float x, float y, float width, float height)
         SceneObjectType::Tree,
         Rectangle{x, y, width, height},
         true,
+        false,
         GREEN
     };
 }
@@ -186,6 +192,25 @@ SceneObject MakeHouseEntrance(float x, float y, float width, float height)
         SceneObjectType::HouseEntrance,
         Rectangle{x, y, width, height},
         false,
+        true, // 👈 ważne
         MAROON
     };
+}
+
+const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene)
+{
+    for (const SceneObject& object : scene.objects)
+    {
+        if (!object.isInteractable)
+        {
+            continue;
+        }
+
+        if (CheckCollisionRecs(playerRect, object.rect))
+        {
+            return &object;
+        }
+    }
+
+    return nullptr;
 }

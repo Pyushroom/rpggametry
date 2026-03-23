@@ -36,6 +36,7 @@ struct SceneObject
     SceneObjectType type{};
     Rectangle rect{};
     bool blocksMovement{false};
+    bool isInteractable{false};
     Color color{};
 };
 
@@ -64,3 +65,5 @@ void DrawSceneInfo(const Scene& scene);
 [[nodiscard]] SceneObject MakeBush(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeTree(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeHouseEntrance(float x, float y, float width, float height);
+
+[[nodiscard]] const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene);
