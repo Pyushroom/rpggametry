@@ -1,6 +1,6 @@
-#include "scene.hpp"
+#include "Scene.hpp"
 
-#include "config.hpp"
+#include "Config.hpp"
 
 bool SceneCoord::operator==(const SceneCoord& other) const
 {
@@ -125,11 +125,7 @@ void DrawSceneObjects(const Scene& scene)
 
             DrawRectangleRec(trunk, BROWN);
         }
-        else if (object.type == SceneObjectType::HouseEntrance)
-        {
-            DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
-        }
-        else if (object.type == SceneObjectType::Npc)
+        else if (object.type == SceneObjectType::HouseEntrance || object.type == SceneObjectType::Npc)
         {
             DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
         }
@@ -265,7 +261,7 @@ SceneObject MakeNpc(
     float width,
     float height,
     const char* promptText,
-    const char* dialogText)
+    const DialogueData* dialogueData)
 {
     return SceneObject{
         SceneObjectType::Npc,
@@ -275,7 +271,7 @@ SceneObject MakeNpc(
         VIOLET,
         InteractionType::Dialogue,
         promptText,
-        dialogText,
+        dialogueData,
         false,
         SceneCoord{},
         Vector2{}

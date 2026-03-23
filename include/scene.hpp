@@ -40,6 +40,19 @@ enum class InteractionType
     Dialogue
 };
 
+struct DialogueChoice
+{
+    const char* playerText{};
+    std::vector<const char*> npcResponsePages{};
+};
+
+struct DialogueData
+{
+    const char* speakerName{};
+    std::vector<const char*> openingPages{};
+    std::vector<DialogueChoice> choices{};
+};
+
 struct SceneObject
 {
     SceneObjectType type{};
@@ -50,7 +63,8 @@ struct SceneObject
 
     InteractionType interactionType{InteractionType::None};
     const char* promptText{nullptr};
-    const char* dialogText{nullptr};
+
+    const DialogueData* dialogueData{nullptr};
 
     bool hasTargetScene{false};
     SceneCoord targetSceneCoord{};
@@ -95,7 +109,7 @@ void DrawSceneInfo(const Scene& scene);
     float width,
     float height,
     const char* promptText,
-    const char* dialogText);
+    const DialogueData* dialogueData);
 
 [[nodiscard]] SceneObject MakeHouseEntrance(
     float x,

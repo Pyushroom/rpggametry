@@ -142,6 +142,131 @@ void World::DrawAvailableTransitions(const SceneCoord& currentCoord) const
 
 void World::CreateScenes()
 {
+    static const DialogueData travelerDialogue{
+        "Wedrowiec",
+        {
+            "Witaj podrozniku!",
+            "To dopiero poczatek twojej przygody.",
+            "Rozejrzyj sie dobrze po okolicy."
+        },
+        {}
+    };
+
+    static const DialogueData guardDialogue{
+        "Straznik",
+        {
+            "Czego chcesz, wedrowcze?"
+        },
+        {
+            DialogueChoice{
+                "Kim jestes?",
+                {
+                    "Jestem straznikiem tej drogi.",
+                    "Pilnuje porzadku i obserwuje, kto przechodzi."
+                }
+            },
+            DialogueChoice{
+                "Co jest dalej?",
+                {
+                    "Na wschodzie kiedys powstanie miasto.",
+                    "Na razie droga nie jest jeszcze gotowa."
+                }
+            },
+            DialogueChoice{
+                "Do widzenia.",
+                {
+                    "Ruszaj ostroznie."
+                }
+            }
+        }
+    };
+
+    static const DialogueData ladderGuideDialogue{
+        "Robotnik",
+        {
+            "Potrzebujesz pomocy z ta drabina?"
+        },
+        {
+            DialogueChoice{
+                "Dokad prowadzi?",
+                {
+                    "Na wyzszy poziom pola.",
+                    "Mozesz tez zejsc z powrotem druga drabina."
+                }
+            },
+            DialogueChoice{
+                "Dzieki.",
+                {
+                    "Nie ma sprawy."
+                }
+            }
+        }
+    };
+
+    static const DialogueData hillWatcherDialogue{
+        "Obserwator",
+        {
+            "Na wzgorzu latwiej wypatrzyc droge przed soba.",
+            "Przy dobrej pogodzie widac nawet odlegle sciezki."
+        },
+        {}
+    };
+
+    static const DialogueData houseOwnerDialogue{
+        "Gospodarz",
+        {
+            "To moj dom.",
+            "Rozgosc sie, ale niczego nie ruszaj."
+        },
+        {}
+    };
+
+    static const DialogueData cartographerDialogue{
+        "Kartograf",
+        {
+            "Przechowuje tutaj mapy okolicy."
+        },
+        {
+            DialogueChoice{
+                "Co rysujesz?",
+                {
+                    "Na razie tylko okolice polany, drogi i wzgorza.",
+                    "Z czasem mapa stanie sie duzo wieksza."
+                }
+            },
+            DialogueChoice{
+                "Moge zobaczyc mapy?",
+                {
+                    "Jeszcze nie.",
+                    "Najpierw musze je dokonczyc."
+                }
+            }
+        }
+    };
+
+    static const DialogueData herbalistDialogue{
+        "Zielarka",
+        {
+            "Lubie rosliny.",
+            "Kiedys bedzie tu prawdziwy zielnik."
+        },
+        {
+            DialogueChoice{
+                "Jakie rosliny zbierasz?",
+                {
+                    "Glownie ziola z laki i krzewy z okolicy.",
+                    "Niektore nadaja sie do leczenia, inne do mikstur."
+                }
+            },
+            DialogueChoice{
+                "Brzmi dobrze.",
+                {
+                    "Wroc pozniej, moze cos juz tu wyrosnie."
+                }
+            }
+        }
+    };
+
     AddScene(SceneDefinition{
         SceneCoord{0, 0},
         GREEN,
@@ -160,7 +285,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Witaj podrozniku! To dopiero poczatek twojej przygody."),
+                &travelerDialogue),
             MakeHouseEntrance(
                 80.0f,
                 260.0f,
@@ -202,7 +327,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Ta drabina prowadzi na wyzszy poziom pola.")
+                &ladderGuideDialogue)
         }
     });
 
@@ -222,7 +347,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Za ta droga kiedys powstanie miasto."),
+                &guardDialogue),
             MakeHouseEntrance(
                 780.0f,
                 420.0f,
@@ -265,7 +390,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Na wzgorzu latwiej wypatrzyc droge przed soba.")
+                &hillWatcherDialogue)
         }
     });
 
@@ -280,13 +405,6 @@ void World::CreateScenes()
             MakeWall(560.0f, 180.0f, 40.0f, 280.0f),
             MakeBush(700.0f, 120.0f, 120.0f, 80.0f),
             MakeBush(720.0f, 240.0f, 100.0f, 70.0f),
-            MakeNpc(
-                260.0f,
-                520.0f,
-                40.0f,
-                60.0f,
-                "Nacisnij E, aby porozmawiac",
-                "Na lace jest spokojnie. Idealne miejsce na odpoczynek."),
             MakeHouseEntrance(
                 100.0f,
                 500.0f,
@@ -317,7 +435,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "To moj dom. Rozgosc sie, ale niczego nie ruszaj."),
+                &houseOwnerDialogue),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,
@@ -348,7 +466,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Przechowuje tutaj mapy, ale jeszcze zadnej ci nie dam."),
+                &cartographerDialogue),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,
@@ -379,7 +497,7 @@ void World::CreateScenes()
                 40.0f,
                 60.0f,
                 "Nacisnij E, aby porozmawiac",
-                "Lubie rosliny. Kiedys bedzie tu prawdziwy zielnik."),
+                &herbalistDialogue),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,

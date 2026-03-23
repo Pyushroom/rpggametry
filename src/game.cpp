@@ -22,13 +22,12 @@ Game::Game()
 
 int Game::Run()
 {
-    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - NPC Dialogue");
+    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Multi Page Dialogue");
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
     {
         const float deltaTime = GetFrameTime();
-
         Update(deltaTime);
 
         const Scene* currentScene = m_world.FindScene(m_currentCoord);
@@ -45,6 +44,72 @@ int Game::Run()
     return 0;
 }
 
+void Game::ResetDialogueState()
+{
+    m_dialogueMode = DialogueMode::Hidden;
+    m_activeDialogue = nullptr;
+    m_currentPages.clear();
+    m_currentPageIndex = 0;
+    m_selectedChoiceIndex = 0;
+}
+
+void Game::StartDialogue(const DialogueData* dialogueData)
+{
+    ResetDialogueState();
+
+    if (dialogueData == nullptr)
+    {
+        return;
+    }
+
+    m_activeDialogue = dialogueData;
+    m_currentPages = dialogueData->openingPages;
+    m_currentPageIndex = 0;
+
+    if (!m_currentPages.empty())
+    {
+        m_dialogueMode = DialogueMode::OpeningPages;
+    }
+    else if (!dialogueData->choices.empty())
+    {
+        m_dialogueMode = DialogueMode::ChoiceSelection;
+    }
+}
+
+void Game::AdvanceDialoguePage()
+{
+    if (m_currentPages.empty())
+    {
+        return;
+    }
+
+    ++m_currentPageIndex;
+
+    if (m_currentPageIndex < static_cast<int>(m_currentPages.size()))
+    {
+        return;
+    }
+
+    if (m_dialogueMode == DialogueMode::OpeningPages)
+    {
+        if (m_activeDialogue != nullptr && !m_activeDialogue->choices.empty())
+        {
+            m_dialogueMode = DialogueMode::ChoiceSelection;
+            m_currentPages.clear();
+            m_currentPageIndex = 0;
+            return;
+        }
+
+        ResetDialogueState();
+        return;
+    }
+
+    if (m_dialogueMode == DialogueMode::ResponsePages)
+    {
+        ResetDialogueState();
+    }
+}
+
 void Game::Update(float deltaTime)
 {
     const Scene* currentScene = m_world.FindScene(m_currentCoord);
@@ -53,15 +118,71 @@ void Game::Update(float deltaTime)
         return;
     }
 
-    if (m_dialogueVisible)
+    if (m_dialogueMode != DialogueMode::Hidden)
     {
-        if (IsKeyPressed(KEY_E) || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+        if (m_dialogueMode == DialogueMode::OpeningPages ||
+            m_dialogueMode == DialogueMode::ResponsePages)
         {
-            m_dialogueVisible = false;
-            m_currentDialogueText = nullptr;
+            if (IsKeyPressed(KEY_E) || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+            {
+                AdvanceDialoguePage();
+            }
+
+            return;
         }
 
-        return;
+        if (m_dialogueMode == DialogueMode::ChoiceSelection)
+        {
+            if (m_activeDialogue == nullptr)
+            {
+                ResetDialogueState();
+                return;
+            }
+
+            const int choiceCount = static_cast<int>(m_activeDialogue->choices.size());
+
+            if (choiceCount <= 0)
+            {
+                ResetDialogueState();
+                return;
+            }
+
+            if (IsKeyPressed(KEY_W) || IsKeyPressed(KEY_UP))
+            {
+                --m_selectedChoiceIndex;
+                if (m_selectedChoiceIndex < 0)
+                {
+                    m_selectedChoiceIndex = choiceCount - 1;
+                }
+            }
+
+            if (IsKeyPressed(KEY_S) || IsKeyPressed(KEY_DOWN))
+            {
+                ++m_selectedChoiceIndex;
+                if (m_selectedChoiceIndex >= choiceCount)
+                {
+                    m_selectedChoiceIndex = 0;
+                }
+            }
+
+            if (IsKeyPressed(KEY_E) || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+            {
+                m_currentPages =
+                    m_activeDialogue->choices[static_cast<std::size_t>(m_selectedChoiceIndex)].npcResponsePages;
+                m_currentPageIndex = 0;
+
+                if (!m_currentPages.empty())
+                {
+                    m_dialogueMode = DialogueMode::ResponsePages;
+                }
+                else
+                {
+                    ResetDialogueState();
+                }
+            }
+
+            return;
+        }
     }
 
     if (m_transitionCooldown > 0.0f)
@@ -94,10 +215,10 @@ void Game::Update(float deltaTime)
                 return;
             }
 
-            if (interactable->interactionType == InteractionType::Dialogue)
+            if (interactable->interactionType == InteractionType::Dialogue &&
+                interactable->dialogueData != nullptr)
             {
-                m_dialogueVisible = true;
-                m_currentDialogueText = interactable->dialogText;
+                StartDialogue(interactable->dialogueData);
                 return;
             }
         }
@@ -139,17 +260,70 @@ void Game::Draw() const
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
     DrawText("E = interakcja", 20, Config::ScreenHeight - 30, 24, WHITE);
 
-    if (!m_dialogueVisible && interactable != nullptr && interactable->promptText != nullptr)
+    if (m_dialogueMode == DialogueMode::Hidden &&
+        interactable != nullptr &&
+        interactable->promptText != nullptr)
     {
         DrawText(interactable->promptText, 20, 130, 24, YELLOW);
     }
 
-    if (m_dialogueVisible && m_currentDialogueText != nullptr)
+    if (m_dialogueMode != DialogueMode::Hidden && m_activeDialogue != nullptr)
     {
-        DrawRectangle(40, Config::ScreenHeight - 180, Config::ScreenWidth - 80, 120, Fade(BLACK, 0.80f));
-        DrawRectangleLines(40, Config::ScreenHeight - 180, Config::ScreenWidth - 80, 120, WHITE);
-        DrawText(m_currentDialogueText, 60, Config::ScreenHeight - 155, 24, WHITE);
-        DrawText("Nacisnij E / Enter / Spacje, aby zamknac", 60, Config::ScreenHeight - 95, 20, YELLOW);
+        DrawRectangle(40, Config::ScreenHeight - 240, Config::ScreenWidth - 80, 180, Fade(BLACK, 0.85f));
+        DrawRectangleLines(40, Config::ScreenHeight - 240, Config::ScreenWidth - 80, 180, WHITE);
+
+        DrawText(m_activeDialogue->speakerName, 60, Config::ScreenHeight - 220, 28, YELLOW);
+
+        if ((m_dialogueMode == DialogueMode::OpeningPages || m_dialogueMode == DialogueMode::ResponsePages) &&
+            !m_currentPages.empty() &&
+            m_currentPageIndex >= 0 &&
+            m_currentPageIndex < static_cast<int>(m_currentPages.size()))
+        {
+            DrawText(m_currentPages[static_cast<std::size_t>(m_currentPageIndex)],
+                     60,
+                     Config::ScreenHeight - 180,
+                     24,
+                     WHITE);
+
+            DrawText(TextFormat("Strona %d / %d",
+                                m_currentPageIndex + 1,
+                                static_cast<int>(m_currentPages.size())),
+                     60,
+                     Config::ScreenHeight - 100,
+                     20,
+                     LIGHTGRAY);
+
+            DrawText("Nacisnij E / Enter / Spacje, aby kontynuowac",
+                     220,
+                     Config::ScreenHeight - 100,
+                     20,
+                     LIGHTGRAY);
+        }
+        else if (m_dialogueMode == DialogueMode::ChoiceSelection)
+        {
+            if (!m_activeDialogue->openingPages.empty())
+            {
+                DrawText(m_activeDialogue->openingPages.back(),
+                         60,
+                         Config::ScreenHeight - 190,
+                         22,
+                         WHITE);
+            }
+
+            const int startY = Config::ScreenHeight - 145;
+            for (int index = 0; index < static_cast<int>(m_activeDialogue->choices.size()); ++index)
+            {
+                const char* prefix = (index == m_selectedChoiceIndex) ? "> " : "  ";
+                DrawText(
+                    TextFormat("%s%s",
+                               prefix,
+                               m_activeDialogue->choices[static_cast<std::size_t>(index)].playerText),
+                    60,
+                    startY + index * 24,
+                    20,
+                    (index == m_selectedChoiceIndex) ? YELLOW : WHITE);
+            }
+        }
     }
 
     EndDrawing();
