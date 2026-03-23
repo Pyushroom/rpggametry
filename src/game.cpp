@@ -22,7 +22,7 @@ Game::Game()
 
 int Game::Run()
 {
-    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Game Class");
+    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - NPC Dialogue");
     SetTargetFPS(60);
 
     while (!WindowShouldClose())
@@ -53,6 +53,17 @@ void Game::Update(float deltaTime)
         return;
     }
 
+    if (m_dialogueVisible)
+    {
+        if (IsKeyPressed(KEY_E) || IsKeyPressed(KEY_ENTER) || IsKeyPressed(KEY_SPACE))
+        {
+            m_dialogueVisible = false;
+            m_currentDialogueText = nullptr;
+        }
+
+        return;
+    }
+
     if (m_transitionCooldown > 0.0f)
     {
         m_transitionCooldown -= deltaTime;
@@ -67,7 +78,7 @@ void Game::Update(float deltaTime)
     if (IsKeyPressed(KEY_E))
     {
         const SceneObject* interactable =
-            FindInteractableObject(m_player.rect, *currentScene);
+            FindInteractableObjectNearby(m_player.rect, *currentScene);
 
         if (interactable != nullptr)
         {
@@ -80,6 +91,13 @@ void Game::Update(float deltaTime)
 
                 SetPlayerPosition(m_player, interactable->targetPlayerPosition);
                 m_transitionCooldown = Config::TransitionCooldownTime;
+                return;
+            }
+
+            if (interactable->interactionType == InteractionType::Dialogue)
+            {
+                m_dialogueVisible = true;
+                m_currentDialogueText = interactable->dialogText;
                 return;
             }
         }
@@ -108,7 +126,7 @@ void Game::Draw() const
     }
 
     const SceneObject* interactable =
-        FindInteractableObject(m_player.rect, *currentScene);
+        FindInteractableObjectNearby(m_player.rect, *currentScene);
 
     BeginDrawing();
     ClearBackground(currentScene->backgroundColor);
@@ -121,9 +139,17 @@ void Game::Draw() const
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
     DrawText("E = interakcja", 20, Config::ScreenHeight - 30, 24, WHITE);
 
-    if (interactable != nullptr && interactable->promptText != nullptr)
+    if (!m_dialogueVisible && interactable != nullptr && interactable->promptText != nullptr)
     {
         DrawText(interactable->promptText, 20, 130, 24, YELLOW);
+    }
+
+    if (m_dialogueVisible && m_currentDialogueText != nullptr)
+    {
+        DrawRectangle(40, Config::ScreenHeight - 180, Config::ScreenWidth - 80, 120, Fade(BLACK, 0.80f));
+        DrawRectangleLines(40, Config::ScreenHeight - 180, Config::ScreenWidth - 80, 120, WHITE);
+        DrawText(m_currentDialogueText, 60, Config::ScreenHeight - 155, 24, WHITE);
+        DrawText("Nacisnij E / Enter / Spacje, aby zamknac", 60, Config::ScreenHeight - 95, 20, YELLOW);
     }
 
     EndDrawing();

@@ -29,13 +29,15 @@ enum class SceneObjectType
     Decoration,
     Bush,
     Tree,
-    HouseEntrance
+    HouseEntrance,
+    Npc
 };
 
 enum class InteractionType
 {
     None,
-    Teleport
+    Teleport,
+    Dialogue
 };
 
 struct SceneObject
@@ -48,6 +50,7 @@ struct SceneObject
 
     InteractionType interactionType{InteractionType::None};
     const char* promptText{nullptr};
+    const char* dialogText{nullptr};
 
     bool hasTargetScene{false};
     SceneCoord targetSceneCoord{};
@@ -69,7 +72,7 @@ struct Scene
 [[nodiscard]] Rectangle MakeDownTransition();
 
 [[nodiscard]] bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene);
-[[nodiscard]] const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene);
+[[nodiscard]] const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, const Scene& scene);
 
 void DrawSceneObjects(const Scene& scene);
 void DrawSceneInfo(const Scene& scene);
@@ -86,6 +89,13 @@ void DrawSceneInfo(const Scene& scene);
 [[nodiscard]] SceneObject MakeDecoration(float x, float y, float width, float height, Color color);
 [[nodiscard]] SceneObject MakeBush(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeTree(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeNpc(
+    float x,
+    float y,
+    float width,
+    float height,
+    const char* promptText,
+    const char* dialogText);
 
 [[nodiscard]] SceneObject MakeHouseEntrance(
     float x,

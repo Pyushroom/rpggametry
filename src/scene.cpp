@@ -65,8 +65,10 @@ bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene)
     return false;
 }
 
-const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene)
+const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, const Scene& scene)
 {
+    constexpr float interactionRange = 12.0f;
+
     for (const SceneObject& object : scene.objects)
     {
         if (!object.isInteractable)
@@ -74,7 +76,14 @@ const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Sce
             continue;
         }
 
-        if (CheckCollisionRecs(playerRect, object.rect))
+        Rectangle expandedRect{
+            object.rect.x - interactionRange,
+            object.rect.y - interactionRange,
+            object.rect.width + interactionRange * 2.0f,
+            object.rect.height + interactionRange * 2.0f
+        };
+
+        if (CheckCollisionRecs(playerRect, expandedRect))
         {
             return &object;
         }
@@ -120,6 +129,10 @@ void DrawSceneObjects(const Scene& scene)
         {
             DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
         }
+        else if (object.type == SceneObjectType::Npc)
+        {
+            DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
+        }
     }
 }
 
@@ -148,6 +161,7 @@ SceneObject MakeWall(float x, float y, float width, float height)
         DARKGRAY,
         InteractionType::None,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -163,6 +177,7 @@ SceneObject MakeRock(float x, float y, float width, float height)
         false,
         GRAY,
         InteractionType::None,
+        nullptr,
         nullptr,
         false,
         SceneCoord{},
@@ -186,6 +201,7 @@ SceneObject MakeLadder(
         BROWN,
         InteractionType::Teleport,
         promptText,
+        nullptr,
         false,
         SceneCoord{},
         targetPlayerPosition
@@ -201,6 +217,7 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         false,
         color,
         InteractionType::None,
+        nullptr,
         nullptr,
         false,
         SceneCoord{},
@@ -218,6 +235,7 @@ SceneObject MakeBush(float x, float y, float width, float height)
         DARKGREEN,
         InteractionType::None,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -234,6 +252,30 @@ SceneObject MakeTree(float x, float y, float width, float height)
         GREEN,
         InteractionType::None,
         nullptr,
+        nullptr,
+        false,
+        SceneCoord{},
+        Vector2{}
+    };
+}
+
+SceneObject MakeNpc(
+    float x,
+    float y,
+    float width,
+    float height,
+    const char* promptText,
+    const char* dialogText)
+{
+    return SceneObject{
+        SceneObjectType::Npc,
+        Rectangle{x, y, width, height},
+        true,
+        true,
+        VIOLET,
+        InteractionType::Dialogue,
+        promptText,
+        dialogText,
         false,
         SceneCoord{},
         Vector2{}
@@ -257,6 +299,7 @@ SceneObject MakeHouseEntrance(
         MAROON,
         InteractionType::Teleport,
         promptText,
+        nullptr,
         true,
         targetSceneCoord,
         targetPlayerPosition

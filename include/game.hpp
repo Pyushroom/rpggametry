@@ -19,4 +19,7 @@ private:
     Player m_player{};
     SceneCoord m_currentCoord{0, 0};
     float m_transitionCooldown{0.0f};
+
+    bool m_dialogueVisible{false};
+    const char* m_currentDialogueText{nullptr};
 };
