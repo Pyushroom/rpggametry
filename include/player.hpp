@@ -13,3 +13,4 @@ struct Player
 void MovePlayer(Player& player, const Scene& scene, float deltaTime);
 void ClampPlayerToScreen(Player& player);
 void SetPlayerPositionAfterTransition(Player& player, Direction direction);
+void SetPlayerPosition(Player& player, Vector2 position);

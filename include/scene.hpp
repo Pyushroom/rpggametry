@@ -2,6 +2,7 @@
 
 #include <raylib.h>
 
+#include <optional>
 #include <vector>
 
 enum class Direction
@@ -38,6 +39,10 @@ struct SceneObject
     bool blocksMovement{false};
     bool isInteractable{false};
     Color color{};
+
+    bool hasTargetScene{false};
+    SceneCoord targetSceneCoord{};
+    Vector2 targetPlayerPosition{};
 };
 
 struct Scene
@@ -45,6 +50,7 @@ struct Scene
     SceneCoord coord{};
     Color backgroundColor{};
     const char* name{};
+    bool allowEdgeTransitions{true};
     std::vector<SceneObject> objects{};
 };
 
@@ -54,6 +60,7 @@ struct Scene
 [[nodiscard]] Rectangle MakeDownTransition();
 
 [[nodiscard]] bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene);
+[[nodiscard]] const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene);
 
 void DrawSceneObjects(const Scene& scene);
 void DrawSceneInfo(const Scene& scene);
@@ -64,6 +71,11 @@ void DrawSceneInfo(const Scene& scene);
 [[nodiscard]] SceneObject MakeDecoration(float x, float y, float width, float height, Color color);
 [[nodiscard]] SceneObject MakeBush(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeTree(float x, float y, float width, float height);
-[[nodiscard]] SceneObject MakeHouseEntrance(float x, float y, float width, float height);
 
-[[nodiscard]] const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene);
+[[nodiscard]] SceneObject MakeHouseEntrance(
+    float x,
+    float y,
+    float width,
+    float height,
+    SceneCoord targetSceneCoord,
+    Vector2 targetPlayerPosition);

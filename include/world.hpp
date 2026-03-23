@@ -30,6 +30,7 @@ private:
         SceneCoord coord{};
         Color backgroundColor{};
         const char* name{};
+        bool allowEdgeTransitions{true};
         std::vector<SceneObject> objects{};
     };
 

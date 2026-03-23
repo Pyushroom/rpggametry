@@ -107,3 +107,10 @@ void SetPlayerPositionAfterTransition(Player& player, Direction direction)
 
     ClampPlayerToScreen(player);
 }
+
+void SetPlayerPosition(Player& player, Vector2 position)
+{
+    player.rect.x = position.x;
+    player.rect.y = position.y;
+    ClampPlayerToScreen(player);
+}

@@ -65,6 +65,24 @@ bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene)
     return false;
 }
 
+const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene)
+{
+    for (const SceneObject& object : scene.objects)
+    {
+        if (!object.isInteractable)
+        {
+            continue;
+        }
+
+        if (CheckCollisionRecs(playerRect, object.rect))
+        {
+            return &object;
+        }
+    }
+
+    return nullptr;
+}
+
 void DrawSceneObjects(const Scene& scene)
 {
     for (const SceneObject& object : scene.objects)
@@ -127,7 +145,10 @@ SceneObject MakeWall(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         true,
         false,
-        DARKGRAY
+        DARKGRAY,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
@@ -138,7 +159,10 @@ SceneObject MakeRock(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         true,
         false,
-        GRAY
+        GRAY,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
@@ -149,7 +173,10 @@ SceneObject MakeLadder(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         false,
         false,
-        BROWN
+        BROWN,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
@@ -160,7 +187,10 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         Rectangle{x, y, width, height},
         false,
         false,
-        color
+        color,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
@@ -171,7 +201,10 @@ SceneObject MakeBush(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         true,
         false,
-        DARKGREEN
+        DARKGREEN,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
@@ -182,35 +215,29 @@ SceneObject MakeTree(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         true,
         false,
-        GREEN
+        GREEN,
+        false,
+        SceneCoord{},
+        Vector2{}
     };
 }
 
-SceneObject MakeHouseEntrance(float x, float y, float width, float height)
+SceneObject MakeHouseEntrance(
+    float x,
+    float y,
+    float width,
+    float height,
+    SceneCoord targetSceneCoord,
+    Vector2 targetPlayerPosition)
 {
     return SceneObject{
         SceneObjectType::HouseEntrance,
         Rectangle{x, y, width, height},
         false,
-        true, // 👈 ważne
-        MAROON
+        true,
+        MAROON,
+        true,
+        targetSceneCoord,
+        targetPlayerPosition
     };
-}
-
-const SceneObject* FindInteractableObject(const Rectangle& playerRect, const Scene& scene)
-{
-    for (const SceneObject& object : scene.objects)
-    {
-        if (!object.isInteractable)
-        {
-            continue;
-        }
-
-        if (CheckCollisionRecs(playerRect, object.rect))
-        {
-            return &object;
-        }
-    }
-
-    return nullptr;
 }

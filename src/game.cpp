@@ -64,6 +64,20 @@ void Game::Update(float deltaTime)
 
     MovePlayer(m_player, *currentScene, deltaTime);
 
+    if (IsKeyPressed(KEY_E))
+    {
+        const SceneObject* interactable =
+            FindInteractableObject(m_player.rect, *currentScene);
+
+        if (interactable != nullptr && interactable->hasTargetScene)
+        {
+            m_currentCoord = interactable->targetSceneCoord;
+            SetPlayerPosition(m_player, interactable->targetPlayerPosition);
+            m_transitionCooldown = Config::TransitionCooldownTime;
+            return;
+        }
+    }
+
     if (m_transitionCooldown <= 0.0f)
     {
         const std::optional<Direction> transition =
@@ -74,21 +88,6 @@ void Game::Update(float deltaTime)
             m_currentCoord = m_world.GetNextCoord(m_currentCoord, *transition);
             SetPlayerPositionAfterTransition(m_player, *transition);
             m_transitionCooldown = Config::TransitionCooldownTime;
-        }
-    }
-
-    if (IsKeyPressed(KEY_E))
-    {
-        const SceneObject* interactable =
-            FindInteractableObject(m_player.rect, *currentScene);
-
-        if (interactable != nullptr)
-        {
-            if (interactable->type == SceneObjectType::HouseEntrance)
-            {
-                // na razie debug:
-                TraceLog(LOG_INFO, "Wszedles do domu!");
-            }
         }
     }
 }
@@ -102,11 +101,7 @@ void Game::Draw() const
     }
 
     const SceneObject* interactable =
-    FindInteractableObject(m_player.rect, *currentScene);
-    if (interactable != nullptr)
-    {
-        DrawText("Nacisnij E", 20, 100, 24, YELLOW);
-    }
+        FindInteractableObject(m_player.rect, *currentScene);
 
     BeginDrawing();
     ClearBackground(currentScene->backgroundColor);
@@ -117,7 +112,12 @@ void Game::Draw() const
     DrawSceneInfo(*currentScene);
 
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
-    DrawText("Config.hpp trzyma wspolne stale", 20, Config::ScreenHeight - 30, 24, WHITE);
+    DrawText("E = interakcja z wejsciem", 20, Config::ScreenHeight - 30, 24, WHITE);
+
+    if (interactable != nullptr && interactable->type == SceneObjectType::HouseEntrance)
+    {
+        DrawText("Nacisnij E, aby wejsc", 20, 130, 24, YELLOW);
+    }
 
     EndDrawing();
 }
