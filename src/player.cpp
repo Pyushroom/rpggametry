@@ -63,7 +63,7 @@ void MovePlayer(Player& player, const Scene& scene, float deltaTime)
         nextX.x = static_cast<float>(Config::ScreenWidth) - nextX.width;
     }
 
-    if (!CollidesWithWalls(nextX, scene))
+    if (!CollidesWithBlockingObjects(nextX, scene))
     {
         player.rect.x = nextX.x;
     }
@@ -81,7 +81,7 @@ void MovePlayer(Player& player, const Scene& scene, float deltaTime)
         nextY.y = static_cast<float>(Config::ScreenHeight) - nextY.height;
     }
 
-    if (!CollidesWithWalls(nextY, scene))
+    if (!CollidesWithBlockingObjects(nextY, scene))
     {
         player.rect.y = nextY.y;
     }

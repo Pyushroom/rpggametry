@@ -102,9 +102,10 @@ void World::CreateScenes()
         GREEN,
         "Zielona Polana",
         {
-            Rectangle{180.0f, 140.0f, 140.0f, 40.0f},
-            Rectangle{500.0f, 220.0f, 220.0f, 40.0f},
-            Rectangle{320.0f, 420.0f, 280.0f, 40.0f}
+            MakeWall(Rectangle{180.0f, 140.0f, 140.0f, 40.0f}),
+            MakeRock(Rectangle{500.0f, 220.0f, 70.0f, 70.0f}),
+            MakeRock(Rectangle{620.0f, 220.0f, 100.0f, 60.0f}),
+            MakeDecoration(Rectangle{320.0f, 420.0f, 280.0f, 40.0f}, DARKGREEN)
         }
     });
 
@@ -113,8 +114,9 @@ void World::CreateScenes()
         BLUE,
         "Blekitne Pole",
         {
-            Rectangle{240.0f, 120.0f, 40.0f, 260.0f},
-            Rectangle{520.0f, 260.0f, 180.0f, 40.0f}
+            MakeWall(Rectangle{240.0f, 120.0f, 40.0f, 260.0f}),
+            MakeLadder(Rectangle{520.0f, 220.0f, 36.0f, 120.0f}),
+            MakeRock(Rectangle{620.0f, 260.0f, 80.0f, 60.0f})
         }
     });
 
@@ -123,8 +125,9 @@ void World::CreateScenes()
         ORANGE,
         "Pomaranczowa Droga",
         {
-            Rectangle{180.0f, 300.0f, 520.0f, 40.0f},
-            Rectangle{700.0f, 160.0f, 40.0f, 220.0f}
+            MakeWall(Rectangle{180.0f, 300.0f, 520.0f, 40.0f}),
+            MakeWall(Rectangle{700.0f, 160.0f, 40.0f, 220.0f}),
+            MakeDecoration(Rectangle{120.0f, 160.0f, 40.0f, 40.0f}, GOLD)
         }
     });
 
@@ -133,9 +136,10 @@ void World::CreateScenes()
         PURPLE,
         "Fioletowe Wzgorze",
         {
-            Rectangle{220.0f, 180.0f, 120.0f, 40.0f},
-            Rectangle{420.0f, 180.0f, 120.0f, 40.0f},
-            Rectangle{620.0f, 180.0f, 120.0f, 40.0f}
+            MakeRock(Rectangle{220.0f, 180.0f, 120.0f, 40.0f}),
+            MakeRock(Rectangle{420.0f, 180.0f, 120.0f, 40.0f}),
+            MakeRock(Rectangle{620.0f, 180.0f, 120.0f, 40.0f}),
+            MakeLadder(Rectangle{450.0f, 340.0f, 36.0f, 120.0f})
         }
     });
 
@@ -144,9 +148,10 @@ void World::CreateScenes()
         LIME,
         "Dolna Laka",
         {
-            Rectangle{160.0f, 180.0f, 40.0f, 280.0f},
-            Rectangle{360.0f, 120.0f, 40.0f, 280.0f},
-            Rectangle{560.0f, 180.0f, 40.0f, 280.0f}
+            MakeWall(Rectangle{160.0f, 180.0f, 40.0f, 280.0f}),
+            MakeWall(Rectangle{360.0f, 120.0f, 40.0f, 280.0f}),
+            MakeWall(Rectangle{560.0f, 180.0f, 40.0f, 280.0f}),
+            MakeDecoration(Rectangle{700.0f, 120.0f, 120.0f, 120.0f}, GREEN)
         }
     });
 }
@@ -157,7 +162,7 @@ void World::AddScene(const SceneDefinition& definition)
     scene.coord = definition.coord;
     scene.backgroundColor = definition.backgroundColor;
     scene.name = definition.name;
-    scene.walls = definition.walls;
+    scene.objects = definition.objects;
 
     m_scenes.push_back(scene);
 }

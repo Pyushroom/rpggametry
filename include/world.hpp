@@ -30,7 +30,7 @@ private:
         SceneCoord coord{};
         Color backgroundColor{};
         const char* name{};
-        std::vector<Rectangle> walls{};
+        std::vector<SceneObject> objects{};
     };
 
 private:

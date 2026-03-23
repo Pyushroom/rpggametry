@@ -90,7 +90,7 @@ void Game::Draw() const
     ClearBackground(currentScene->backgroundColor);
 
     m_world.DrawAvailableTransitions(m_currentCoord);
-    DrawWalls(*currentScene);
+    DrawSceneObjects(*currentScene);
     DrawRectangleRec(m_player.rect, DARKGRAY);
     DrawSceneInfo(*currentScene);
 
