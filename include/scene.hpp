@@ -32,6 +32,12 @@ enum class SceneObjectType
     HouseEntrance
 };
 
+enum class InteractionType
+{
+    None,
+    Teleport
+};
+
 struct SceneObject
 {
     SceneObjectType type{};
@@ -39,6 +45,9 @@ struct SceneObject
     bool blocksMovement{false};
     bool isInteractable{false};
     Color color{};
+
+    InteractionType interactionType{InteractionType::None};
+    const char* promptText{nullptr};
 
     bool hasTargetScene{false};
     SceneCoord targetSceneCoord{};
@@ -67,7 +76,13 @@ void DrawSceneInfo(const Scene& scene);
 
 [[nodiscard]] SceneObject MakeWall(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeRock(float x, float y, float width, float height);
-[[nodiscard]] SceneObject MakeLadder(float x, float y, float width, float height);
+[[nodiscard]] SceneObject MakeLadder(
+    float x,
+    float y,
+    float width,
+    float height,
+    Vector2 targetPlayerPosition,
+    const char* promptText);
 [[nodiscard]] SceneObject MakeDecoration(float x, float y, float width, float height, Color color);
 [[nodiscard]] SceneObject MakeBush(float x, float y, float width, float height);
 [[nodiscard]] SceneObject MakeTree(float x, float y, float width, float height);
@@ -78,4 +93,5 @@ void DrawSceneInfo(const Scene& scene);
     float width,
     float height,
     SceneCoord targetSceneCoord,
-    Vector2 targetPlayerPosition);
+    Vector2 targetPlayerPosition,
+    const char* promptText);

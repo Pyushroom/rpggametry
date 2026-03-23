@@ -160,7 +160,8 @@ void World::CreateScenes()
                 60.0f,
                 90.0f,
                 SceneCoord{10, 10},
-                Vector2{440.0f, 500.0f})
+                Vector2{440.0f, 500.0f},
+                "Nacisnij E, aby wejsc do domu")
         }
     });
 
@@ -171,7 +172,20 @@ void World::CreateScenes()
         true,
         {
             MakeWall(240.0f, 120.0f, 40.0f, 260.0f),
-            MakeLadder(520.0f, 220.0f, 36.0f, 120.0f),
+            MakeLadder(
+                520.0f,
+                220.0f,
+                36.0f,
+                120.0f,
+                Vector2{520.0f, 60.0f},
+                "Nacisnij E, aby wejsc po drabinie"),
+            MakeLadder(
+                520.0f,
+                40.0f,
+                36.0f,
+                120.0f,
+                Vector2{520.0f, 260.0f},
+                "Nacisnij E, aby zejsc po drabinie"),
             MakeRock(620.0f, 260.0f, 80.0f, 60.0f),
             MakeBush(120.0f, 420.0f, 100.0f, 50.0f),
             MakeTree(760.0f, 180.0f, 100.0f, 150.0f)
@@ -194,7 +208,8 @@ void World::CreateScenes()
                 70.0f,
                 100.0f,
                 SceneCoord{11, 10},
-                Vector2{440.0f, 500.0f})
+                Vector2{440.0f, 500.0f},
+                "Nacisnij E, aby wejsc do domu")
         }
     });
 
@@ -207,7 +222,20 @@ void World::CreateScenes()
             MakeRock(220.0f, 180.0f, 120.0f, 40.0f),
             MakeRock(420.0f, 180.0f, 120.0f, 40.0f),
             MakeRock(620.0f, 180.0f, 120.0f, 40.0f),
-            MakeLadder(450.0f, 340.0f, 36.0f, 120.0f),
+            MakeLadder(
+                450.0f,
+                340.0f,
+                36.0f,
+                120.0f,
+                Vector2{450.0f, 120.0f},
+                "Nacisnij E, aby wejsc po drabinie"),
+            MakeLadder(
+                450.0f,
+                80.0f,
+                36.0f,
+                120.0f,
+                Vector2{450.0f, 380.0f},
+                "Nacisnij E, aby zejsc po drabinie"),
             MakeTree(120.0f, 120.0f, 100.0f, 150.0f),
             MakeTree(760.0f, 120.0f, 100.0f, 150.0f)
         }
@@ -230,7 +258,8 @@ void World::CreateScenes()
                 70.0f,
                 90.0f,
                 SceneCoord{12, 10},
-                Vector2{440.0f, 500.0f})
+                Vector2{440.0f, 500.0f},
+                "Nacisnij E, aby wejsc do domu")
         }
     });
 
@@ -253,7 +282,8 @@ void World::CreateScenes()
                 80.0f,
                 50.0f,
                 SceneCoord{0, 0},
-                Vector2{120.0f, 360.0f})
+                Vector2{120.0f, 360.0f},
+                "Nacisnij E, aby wyjsc z domu")
         }
     });
 
@@ -276,7 +306,8 @@ void World::CreateScenes()
                 80.0f,
                 50.0f,
                 SceneCoord{1, 0},
-                Vector2{760.0f, 520.0f})
+                Vector2{760.0f, 520.0f},
+                "Nacisnij E, aby wyjsc z domu")
         }
     });
 
@@ -299,7 +330,8 @@ void World::CreateScenes()
                 80.0f,
                 50.0f,
                 SceneCoord{0, 1},
-                Vector2{120.0f, 500.0f})
+                Vector2{120.0f, 500.0f},
+                "Nacisnij E, aby wyjsc z domu")
         }
     });
 }

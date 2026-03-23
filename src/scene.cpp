@@ -135,7 +135,7 @@ void DrawSceneInfo(const Scene& scene)
         22,
         WHITE
     );
-    DrawText("Typy: wall, rock, ladder, bush, tree, house", 24, 88, 20, WHITE);
+    DrawText("E = interakcja z obiektami", 24, 88, 20, WHITE);
 }
 
 SceneObject MakeWall(float x, float y, float width, float height)
@@ -146,6 +146,8 @@ SceneObject MakeWall(float x, float y, float width, float height)
         true,
         false,
         DARKGRAY,
+        InteractionType::None,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -160,23 +162,33 @@ SceneObject MakeRock(float x, float y, float width, float height)
         true,
         false,
         GRAY,
+        InteractionType::None,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
     };
 }
 
-SceneObject MakeLadder(float x, float y, float width, float height)
+SceneObject MakeLadder(
+    float x,
+    float y,
+    float width,
+    float height,
+    Vector2 targetPlayerPosition,
+    const char* promptText)
 {
     return SceneObject{
         SceneObjectType::Ladder,
         Rectangle{x, y, width, height},
         false,
-        false,
+        true,
         BROWN,
+        InteractionType::Teleport,
+        promptText,
         false,
         SceneCoord{},
-        Vector2{}
+        targetPlayerPosition
     };
 }
 
@@ -188,6 +200,8 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         false,
         false,
         color,
+        InteractionType::None,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -202,6 +216,8 @@ SceneObject MakeBush(float x, float y, float width, float height)
         true,
         false,
         DARKGREEN,
+        InteractionType::None,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -216,6 +232,8 @@ SceneObject MakeTree(float x, float y, float width, float height)
         true,
         false,
         GREEN,
+        InteractionType::None,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -228,7 +246,8 @@ SceneObject MakeHouseEntrance(
     float width,
     float height,
     SceneCoord targetSceneCoord,
-    Vector2 targetPlayerPosition)
+    Vector2 targetPlayerPosition,
+    const char* promptText)
 {
     return SceneObject{
         SceneObjectType::HouseEntrance,
@@ -236,6 +255,8 @@ SceneObject MakeHouseEntrance(
         false,
         true,
         MAROON,
+        InteractionType::Teleport,
+        promptText,
         true,
         targetSceneCoord,
         targetPlayerPosition

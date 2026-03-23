@@ -69,12 +69,19 @@ void Game::Update(float deltaTime)
         const SceneObject* interactable =
             FindInteractableObject(m_player.rect, *currentScene);
 
-        if (interactable != nullptr && interactable->hasTargetScene)
+        if (interactable != nullptr)
         {
-            m_currentCoord = interactable->targetSceneCoord;
-            SetPlayerPosition(m_player, interactable->targetPlayerPosition);
-            m_transitionCooldown = Config::TransitionCooldownTime;
-            return;
+            if (interactable->interactionType == InteractionType::Teleport)
+            {
+                if (interactable->hasTargetScene)
+                {
+                    m_currentCoord = interactable->targetSceneCoord;
+                }
+
+                SetPlayerPosition(m_player, interactable->targetPlayerPosition);
+                m_transitionCooldown = Config::TransitionCooldownTime;
+                return;
+            }
         }
     }
 
@@ -112,11 +119,11 @@ void Game::Draw() const
     DrawSceneInfo(*currentScene);
 
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
-    DrawText("E = interakcja z wejsciem", 20, Config::ScreenHeight - 30, 24, WHITE);
+    DrawText("E = interakcja", 20, Config::ScreenHeight - 30, 24, WHITE);
 
-    if (interactable != nullptr && interactable->type == SceneObjectType::HouseEntrance)
+    if (interactable != nullptr && interactable->promptText != nullptr)
     {
-        DrawText("Nacisnij E, aby wejsc", 20, 130, 24, YELLOW);
+        DrawText(interactable->promptText, 20, 130, 24, YELLOW);
     }
 
     EndDrawing();
