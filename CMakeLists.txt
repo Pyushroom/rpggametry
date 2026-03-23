@@ -14,8 +14,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_WARNINGS "Enable extra compiler warnings" ON)
 option(ENABLE_SANITIZERS "Enable sanitizers in Debug builds" OFF)
 
+find_package(raylib CONFIG REQUIRED)
+
 set(SOURCES
     src/main.cpp
+    src/world.cpp
+    src/player.cpp
+    src/scene.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -23,6 +28,11 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        raylib
 )
 
 if(ENABLE_WARNINGS)
