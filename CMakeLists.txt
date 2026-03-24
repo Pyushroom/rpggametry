@@ -24,6 +24,7 @@ set(SOURCES
     src/world/World.cpp
     src/world/WorldData.cpp
     src/dialogue/DialogueDatabase.cpp
+    src/dialogue/DialogueController.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
