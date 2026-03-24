@@ -1,10 +1,11 @@
 #pragma once
 
-#include "player.hpp"
-#include "scene.hpp"
+#include "scene/scene.hpp"
 
 #include <optional>
 #include <vector>
+
+struct Player;
 
 class World
 {
@@ -25,18 +26,5 @@ public:
     void DrawAvailableTransitions(const SceneCoord& currentCoord) const;
 
 private:
-    struct SceneDefinition
-    {
-        SceneCoord coord{};
-        Color backgroundColor{};
-        const char* name{};
-        bool allowEdgeTransitions{true};
-        std::vector<SceneObject> objects{};
-    };
-
-private:
     std::vector<Scene> m_scenes;
-
-    void CreateScenes();
-    void AddScene(const SceneDefinition& definition);
 };

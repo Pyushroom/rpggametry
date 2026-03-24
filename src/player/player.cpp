@@ -1,4 +1,4 @@
-#include "player.hpp"
+#include "player/player.hpp"
 
 #include "config.hpp"
 

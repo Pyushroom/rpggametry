@@ -1,6 +1,8 @@
-#include "Scene.hpp"
+#include "scene/scene.hpp"
 
-#include "Config.hpp"
+#include <raylib.h>
+
+#include "config.hpp"
 
 bool SceneCoord::operator==(const SceneCoord& other) const
 {

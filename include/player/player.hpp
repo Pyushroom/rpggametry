@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-#include "scene.hpp"
+#include "scene/scene.hpp"
 
 struct Player
 {

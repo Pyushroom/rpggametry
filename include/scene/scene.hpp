@@ -2,7 +2,8 @@
 
 #include <raylib.h>
 
-#include <optional>
+#include "dialogue/dialogue.hpp"
+
 #include <vector>
 
 enum class Direction
@@ -38,19 +39,6 @@ enum class InteractionType
     None,
     Teleport,
     Dialogue
-};
-
-struct DialogueChoice
-{
-    const char* playerText{};
-    std::vector<const char*> npcResponsePages{};
-};
-
-struct DialogueData
-{
-    const char* speakerName{};
-    std::vector<const char*> openingPages{};
-    std::vector<DialogueChoice> choices{};
 };
 
 struct SceneObject
@@ -110,7 +98,6 @@ void DrawSceneInfo(const Scene& scene);
     float height,
     const char* promptText,
     const DialogueData* dialogueData);
-
 [[nodiscard]] SceneObject MakeHouseEntrance(
     float x,
     float y,

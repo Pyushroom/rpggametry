@@ -1,11 +1,29 @@
-#include "game.hpp"
+#include "game/game.hpp"
 
 #include <raylib.h>
 
 #include "config.hpp"
 
 #include <optional>
+#include <string>
+#include <vector>
 
+namespace
+{
+constexpr int DialogueBoxX = 40;
+constexpr int DialogueBoxY = Config::ScreenHeight - 250;
+constexpr int DialogueBoxWidth = Config::ScreenWidth - 80;
+constexpr int DialogueBoxHeight = 190;
+constexpr int DialogueTextLeft = 60;
+constexpr int DialogueTextWidth = DialogueBoxWidth - 40;
+
+constexpr int DialogueBodyFontSize = 24;
+constexpr int DialogueChoiceFontSize = 20;
+constexpr int DialogueOpeningFontSize = 22;
+
+constexpr int DialogueMaxLinesPerPage = 3;
+constexpr int DialogueResponseMaxLinesPerPage = 3;
+}
 Game::Game()
     : m_world{}
     , m_player{
@@ -24,6 +42,7 @@ int Game::Run()
 {
     InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Dialogue System");
     SetTargetFPS(60);
+    SetExitKey(KEY_NULL);
 
     while (!WindowShouldClose())
     {
@@ -59,6 +78,131 @@ void Game::ResetDialogueState()
     m_selectedChoiceText = nullptr;
 }
 
+std::vector<std::string> Game::WrapTextToLines(const char* text, int fontSize, int maxWidth) const
+{
+    if (text == nullptr)
+    {
+        return {};
+    }
+
+    const std::string input{text};
+    std::vector<std::string> lines;
+    std::string currentLine;
+    std::string currentWord;
+
+    auto pushCurrentLine = [&]()
+    {
+        if (!currentLine.empty())
+        {
+            lines.push_back(currentLine);
+            currentLine.clear();
+        }
+    };
+
+    auto flushWord = [&]()
+    {
+        if (currentWord.empty())
+        {
+            return;
+        }
+
+        std::string candidate = currentLine.empty()
+            ? currentWord
+            : currentLine + " " + currentWord;
+
+        if (MeasureText(candidate.c_str(), fontSize) <= maxWidth)
+        {
+            currentLine = candidate;
+        }
+        else
+        {
+            if (!currentLine.empty())
+            {
+                lines.push_back(currentLine);
+            }
+
+            currentLine = currentWord;
+        }
+
+        currentWord.clear();
+    };
+
+    for (char ch : input)
+    {
+        if (ch == ' ')
+        {
+            flushWord();
+        }
+        else if (ch == '\n')
+        {
+            flushWord();
+            pushCurrentLine();
+        }
+        else
+        {
+            currentWord += ch;
+        }
+    }
+
+    flushWord();
+    pushCurrentLine();
+
+    return lines;
+}
+
+std::vector<std::string> Game::PaginateText(
+    const char* text,
+    int fontSize,
+    int maxWidth,
+    int maxLinesPerPage) const
+{
+    const std::vector<std::string> lines = WrapTextToLines(text, fontSize, maxWidth);
+    std::vector<std::string> pages;
+
+    if (lines.empty())
+    {
+        return pages;
+    }
+
+    std::string currentPage;
+    int currentLineCount = 0;
+
+    for (const std::string& line : lines)
+    {
+        if (currentLineCount == maxLinesPerPage)
+        {
+            pages.push_back(currentPage);
+            currentPage.clear();
+            currentLineCount = 0;
+        }
+
+        if (!currentPage.empty())
+        {
+            currentPage += '\n';
+        }
+
+        currentPage += line;
+        ++currentLineCount;
+    }
+
+    if (!currentPage.empty())
+    {
+        pages.push_back(currentPage);
+    }
+
+    return pages;
+}
+
+void Game::SetDialoguePagesFromText(
+    const char* text,
+    int fontSize,
+    int maxWidth,
+    int maxLinesPerPage)
+{
+    m_currentPages = PaginateText(text, fontSize, maxWidth, maxLinesPerPage);
+    m_currentPageIndex = 0;
+}
+
 void Game::StartDialogue(const DialogueData* dialogueData)
 {
     ResetDialogueState();
@@ -69,11 +213,17 @@ void Game::StartDialogue(const DialogueData* dialogueData)
     }
 
     m_activeDialogue = dialogueData;
-    m_currentPages = dialogueData->openingPages;
-    m_currentPageIndex = 0;
+    m_selectedChoiceIndex = 0;
 
-    if (!m_currentPages.empty())
+    if (!dialogueData->openingPages.empty())
     {
+        SetDialoguePagesFromText(
+            dialogueData->openingPages.front(),
+            DialogueBodyFontSize,
+            DialogueTextWidth,
+            DialogueMaxLinesPerPage
+        );
+
         m_dialogueMode = DialogueMode::OpeningPages;
     }
     else if (!dialogueData->choices.empty())
@@ -191,8 +341,24 @@ void Game::Update(float deltaTime)
                     m_activeDialogue->choices[static_cast<std::size_t>(m_selectedChoiceIndex)];
 
                 m_selectedChoiceText = choice.playerText;
-                m_currentPages = choice.npcResponsePages;
-                m_currentPageIndex = 0;
+
+                std::string joinedResponse;
+                for (std::size_t index = 0; index < choice.npcResponsePages.size(); ++index)
+                {
+                    if (index > 0)
+                    {
+                        joinedResponse += '\n';
+                    }
+
+                    joinedResponse += choice.npcResponsePages[index];
+                }
+
+                SetDialoguePagesFromText(
+                    joinedResponse.c_str(),
+                    DialogueBodyFontSize,
+                    DialogueTextWidth,
+                    DialogueResponseMaxLinesPerPage
+                );
 
                 if (!m_currentPages.empty())
                 {
@@ -292,10 +458,10 @@ void Game::Draw() const
 
     if (m_dialogueMode != DialogueMode::Hidden && m_activeDialogue != nullptr)
     {
-        DrawRectangle(40, Config::ScreenHeight - 250, Config::ScreenWidth - 80, 190, Fade(BLACK, 0.88f));
-        DrawRectangleLines(40, Config::ScreenHeight - 250, Config::ScreenWidth - 80, 190, WHITE);
+        DrawRectangle(DialogueBoxX, DialogueBoxY, DialogueBoxWidth, DialogueBoxHeight, Fade(BLACK, 0.88f));
+        DrawRectangleLines(DialogueBoxX, DialogueBoxY, DialogueBoxWidth, DialogueBoxHeight, WHITE);
 
-        DrawText(m_activeDialogue->speakerName, 60, Config::ScreenHeight - 228, 28, YELLOW);
+        DrawText(m_activeDialogue->speakerName, DialogueTextLeft, Config::ScreenHeight - 228, 28, YELLOW);
 
         if ((m_dialogueMode == DialogueMode::OpeningPages || m_dialogueMode == DialogueMode::ResponsePages) &&
             !m_currentPages.empty() &&
@@ -305,30 +471,30 @@ void Game::Draw() const
             if (m_dialogueMode == DialogueMode::ResponsePages && m_selectedChoiceText != nullptr)
             {
                 DrawText(TextFormat("Ty: %s", m_selectedChoiceText),
-                         60,
+                         DialogueTextLeft,
                          Config::ScreenHeight - 195,
                          20,
                          LIGHTGRAY);
 
-                DrawText(m_currentPages[static_cast<std::size_t>(m_currentPageIndex)],
-                         60,
+                DrawText(m_currentPages[static_cast<std::size_t>(m_currentPageIndex)].c_str(),
+                         DialogueTextLeft,
                          Config::ScreenHeight - 165,
-                         24,
+                         DialogueBodyFontSize,
                          WHITE);
             }
             else
             {
-                DrawText(m_currentPages[static_cast<std::size_t>(m_currentPageIndex)],
-                         60,
+                DrawText(m_currentPages[static_cast<std::size_t>(m_currentPageIndex)].c_str(),
+                         DialogueTextLeft,
                          Config::ScreenHeight - 180,
-                         24,
+                         DialogueBodyFontSize,
                          WHITE);
             }
 
             DrawText(TextFormat("Strona %d / %d",
                                 m_currentPageIndex + 1,
                                 static_cast<int>(m_currentPages.size())),
-                     60,
+                     DialogueTextLeft,
                      Config::ScreenHeight - 95,
                      20,
                      LIGHTGRAY);
@@ -345,29 +511,51 @@ void Game::Draw() const
 
             if (m_activeDialogue->openingPages.empty())
             {
-                DrawText("Wybierz odpowiedz:", 60, startY, 22, WHITE);
+                DrawText("Wybierz odpowiedz:", DialogueTextLeft, startY, DialogueOpeningFontSize, WHITE);
             }
             else
             {
-                DrawText(m_activeDialogue->openingPages.back(), 60, startY, 22, WHITE);
+                const std::vector<std::string> wrappedOpening =
+                    PaginateText(
+                        m_activeDialogue->openingPages.back(),
+                        DialogueOpeningFontSize,
+                        DialogueTextWidth,
+                        2
+                    );
+
+                if (!wrappedOpening.empty())
+                {
+                    DrawText(wrappedOpening.front().c_str(),
+                             DialogueTextLeft,
+                             startY,
+                             DialogueOpeningFontSize,
+                             WHITE);
+                }
             }
 
             const int optionsY = Config::ScreenHeight - 145;
             for (int index = 0; index < static_cast<int>(m_activeDialogue->choices.size()); ++index)
             {
                 const char* prefix = (index == m_selectedChoiceIndex) ? "> " : "  ";
-                DrawText(
-                    TextFormat("%s%s",
-                               prefix,
-                               m_activeDialogue->choices[static_cast<std::size_t>(index)].playerText),
-                    60,
-                    optionsY + index * 24,
-                    20,
-                    (index == m_selectedChoiceIndex) ? YELLOW : WHITE);
+                const std::string optionText =
+                    std::string(prefix) +
+                    m_activeDialogue->choices[static_cast<std::size_t>(index)].playerText;
+
+                const std::vector<std::string> wrappedOption =
+                    PaginateText(optionText.c_str(), DialogueChoiceFontSize, DialogueTextWidth, 2);
+
+                if (!wrappedOption.empty())
+                {
+                    DrawText(wrappedOption.front().c_str(),
+                             DialogueTextLeft,
+                             optionsY + index * 24,
+                             DialogueChoiceFontSize,
+                             (index == m_selectedChoiceIndex) ? YELLOW : WHITE);
+                }
             }
 
             DrawText("W/S lub strzalki = wybor, E/Enter = potwierdz, Esc = zamknij",
-                     60,
+                     DialogueTextLeft,
                      Config::ScreenHeight - 95,
                      20,
                      LIGHTGRAY);

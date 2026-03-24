@@ -18,10 +18,12 @@ find_package(raylib CONFIG REQUIRED)
 
 set(SOURCES
     src/main.cpp
-    src/world.cpp
-    src/player.cpp
-    src/scene.cpp
-    src/game.cpp
+    src/game/Game.cpp
+    src/player/Player.cpp
+    src/scene/Scene.cpp
+    src/world/World.cpp
+    src/world/WorldData.cpp
+    src/dialogue/DialogueDatabase.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
