@@ -164,17 +164,17 @@ void Game::Draw() const
     DrawRectangleRec(m_player.rect, DARKGRAY);
     DrawSceneInfo(*currentScene);
 
-    const QuestData* latestQuest = QuestSystem::GetLatestActiveQuest(m_gameState);
-    if (latestQuest != nullptr)
+    const QuestData* trackedQuest = m_questJournal.GetTrackedQuest(m_gameState);
+    if (trackedQuest != nullptr)
     {
         DrawRectangle(12, 130, 460, 95, Fade(BLACK, 0.55f));
         DrawRectangleLines(12, 130, 460, 95, WHITE);
 
-        DrawText("Aktualne zadanie", 24, 140, 22, YELLOW);
-        DrawText(latestQuest->title, 24, 166, 20, WHITE);
+        DrawText("Sledzone zadanie", 24, 140, 22, YELLOW);
+        DrawText(trackedQuest->title, 24, 166, 20, WHITE);
 
         int y = 190;
-        for (const QuestObjective& objective : latestQuest->objectives)
+        for (const QuestObjective& objective : trackedQuest->objectives)
         {
             const bool completed = QuestSystem::IsObjectiveCompleted(objective, m_gameState);
 
