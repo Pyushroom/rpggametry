@@ -18,6 +18,9 @@ private:
     void Update(float deltaTime);
     void Draw() const;
 
+    [[nodiscard]] bool ShouldDrawQuestTracker() const;
+    [[nodiscard]] const char* GetQuestTrackerText() const;
+
 private:
     World m_world{};
     Player m_player{};

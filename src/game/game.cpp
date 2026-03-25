@@ -7,6 +7,8 @@
 
 #include <optional>
 
+
+
 Game::Game()
     : m_world{}
     , m_player{
@@ -156,6 +158,14 @@ void Game::Draw() const
     DrawRectangleRec(m_player.rect, DARKGRAY);
     DrawSceneInfo(*currentScene);
 
+    if (ShouldDrawQuestTracker())
+    {
+        DrawRectangle(12, 130, 420, 70, Fade(BLACK, 0.55f));
+        DrawRectangleLines(12, 130, 420, 70, WHITE);
+        DrawText("Dziennik zadania", 24, 140, 22, YELLOW);
+        DrawText(GetQuestTrackerText(), 24, 168, 20, WHITE);
+    }
+
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
     DrawText("E = interakcja", 20, Config::ScreenHeight - 30, 24, WHITE);
 
@@ -169,4 +179,42 @@ void Game::Draw() const
     m_dialogueController.Draw();
 
     EndDrawing();
+}
+bool Game::ShouldDrawQuestTracker() const
+{
+    return m_gameState.HasFlag("quest_guard_started") ||
+           m_gameState.HasFlag("quest_guard_finished");
+}
+
+const char* Game::GetQuestTrackerText() const
+{
+    if (m_gameState.HasFlag("quest_guard_finished"))
+    {
+        return "Quest: Pomoc dla straznika - UKONCZONO";
+    }
+
+    if (!m_gameState.HasFlag("quest_guard_started"))
+    {
+        return "";
+    }
+
+    const bool talkedToCartographer = m_gameState.HasFlag("talked_to_cartographer");
+    const bool talkedToHerbalist = m_gameState.HasFlag("talked_to_herbalist");
+
+    if (!talkedToCartographer && !talkedToHerbalist)
+    {
+        return "Quest: Porozmawiaj z kartografem i zielarka";
+    }
+
+    if (talkedToCartographer && !talkedToHerbalist)
+    {
+        return "Quest: Porozmawiaj z zielarka";
+    }
+
+    if (!talkedToCartographer && talkedToHerbalist)
+    {
+        return "Quest: Porozmawiaj z kartografem";
+    }
+
+    return "Quest: Wroc do straznika";
 }
