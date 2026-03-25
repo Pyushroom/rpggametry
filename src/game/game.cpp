@@ -1,8 +1,9 @@
-#include "game/Game.hpp"
+#include "game/game.hpp"
+#
 
 #include <raylib.h>
 
-#include "Config.hpp"
+#include "config.hpp"
 
 #include <optional>
 
@@ -90,11 +91,34 @@ void Game::Update(float deltaTime)
                 return;
             }
 
-            if (interactable->interactionType == InteractionType::Dialogue &&
-                interactable->dialogueData != nullptr)
+            if (interactable->interactionType == InteractionType::Dialogue)
             {
-                m_dialogueController.StartDialogue(interactable->dialogueData);
-                return;
+                if (interactable->npcData != nullptr)
+                {
+                    const DialogueData* resolvedDialogue =
+                        NpcDatabase::ResolveDialogue(*interactable->npcData, m_gameState);
+
+                    const char* flagToSet =
+                        NpcDatabase::ResolveSetFlagOnUse(*interactable->npcData, m_gameState);
+
+                    if (resolvedDialogue != nullptr)
+                    {
+                        m_dialogueController.StartDialogue(resolvedDialogue, interactable->npcData);
+
+                        if (flagToSet != nullptr)
+                        {
+                            m_gameState.SetFlag(flagToSet);
+                        }
+                    }
+
+                    return;
+                }
+
+                if (interactable->dialogueData != nullptr)
+                {
+                    m_dialogueController.StartDialogue(interactable->dialogueData, interactable->npcData);
+                    return;
+                }
             }
         }
     }

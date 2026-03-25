@@ -43,6 +43,7 @@ void DialogueController::ResetState()
 {
     m_mode = Mode::Hidden;
     m_activeDialogue = nullptr;
+    m_activeNpcData = nullptr;
     m_currentPages.clear();
     m_currentPageIndex = 0;
     m_selectedChoiceIndex = 0;
@@ -177,7 +178,7 @@ void DialogueController::SetPagesFromText(
     m_currentPageIndex = 0;
 }
 
-void DialogueController::StartDialogue(const DialogueData* dialogueData)
+void DialogueController::StartDialogue(const DialogueData* dialogueData, const NpcData* npcData)
 {
     ResetState();
 
@@ -188,6 +189,8 @@ void DialogueController::StartDialogue(const DialogueData* dialogueData)
 
     m_activeDialogue = dialogueData;
     m_selectedChoiceIndex = 0;
+    m_activeNpcData = npcData;
+    
 
     if (!dialogueData->openingPages.empty())
     {
@@ -359,7 +362,20 @@ void DialogueController::Draw() const
     DrawRectangle(DialogueBoxX, DialogueBoxY, DialogueBoxWidth, DialogueBoxHeight, Fade(BLACK, 0.88f));
     DrawRectangleLines(DialogueBoxX, DialogueBoxY, DialogueBoxWidth, DialogueBoxHeight, WHITE);
 
-    DrawText(m_activeDialogue->speakerName, DialogueTextLeft, Config::ScreenHeight - 228, 28, YELLOW);
+    const char* displayName =
+        (m_activeNpcData != nullptr && m_activeNpcData->displayName != nullptr)
+            ? m_activeNpcData->displayName
+            : m_activeDialogue->speakerName;
+
+    const char* title =
+        (m_activeNpcData != nullptr) ? m_activeNpcData->title : nullptr;
+
+    DrawText(displayName, DialogueTextLeft, Config::ScreenHeight - 232, 28, YELLOW);
+
+    if (title != nullptr)
+    {
+        DrawText(title, DialogueTextLeft, Config::ScreenHeight - 205, 18, LIGHTGRAY);
+    }
 
     if ((m_mode == Mode::OpeningPages || m_mode == Mode::ResponsePages) &&
         !m_currentPages.empty() &&

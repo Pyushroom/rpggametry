@@ -1,4 +1,4 @@
-#include "dialogue/dialogueDatabase.hpp"
+#include "dialogue/DialogueDatabase.hpp"
 
 namespace
 {
@@ -39,6 +39,53 @@ const DialogueData guardDialogue{
             }
         }
     }
+};
+
+const DialogueData guardAfterDialogue{
+    "Straznik",
+    {
+        "Znowu ty?",
+        "Mowilem juz wszystko co wiem."
+    },
+    {}
+};
+
+const DialogueData guardQuestStartDialogue{
+    "Straznik",
+    {
+        "Mam dla ciebie proste zadanie.",
+        "Porozmawiaj z kartografem i zielarka.",
+        "Wroc do mnie, gdy zbierzesz od nich informacje."
+    },
+    {}
+};
+
+const DialogueData guardQuestInProgressDialogue{
+    "Straznik",
+    {
+        "Wciaz czekam na wiesci.",
+        "Porozmawiaj z kartografem i zielarka, a potem wroc."
+    },
+    {}
+};
+
+const DialogueData guardQuestCompleteDialogue{
+    "Straznik",
+    {
+        "Dobra robota.",
+        "Mamy juz to, czego potrzebowalem.",
+        "To dopiero prosty poczatek, ale zadanie uznaje za wykonane."
+    },
+    {}
+};
+
+const DialogueData guardQuestFinishedDialogue{
+    "Straznik",
+    {
+        "Dzieki za pomoc.",
+        "Gdy bede mial kolejne zadanie, dam ci znac."
+    },
+    {}
 };
 
 const DialogueData ladderGuideDialogue{
@@ -104,6 +151,25 @@ const DialogueData cartographerDialogue{
     }
 };
 
+const DialogueData cartographerQuestDialogue{
+    "Kartograf",
+    {
+        "A wiec straznik cie przyslal?",
+        "Dobrze. Zanotuj, ze droga na wschod wciaz nie jest gotowa.",
+        "Mozesz przekazac mu te informacje."
+    },
+    {}
+};
+
+const DialogueData cartographerAfterQuestDialogue{
+    "Kartograf",
+    {
+        "Przekazales juz straznikowi to, co powiedzialem?",
+        "Mam jeszcze sporo pracy nad mapami."
+    },
+    {}
+};
+
 const DialogueData herbalistDialogue{
     "Zielarka",
     {
@@ -126,42 +192,47 @@ const DialogueData herbalistDialogue{
         }
     }
 };
+
+const DialogueData herbalistQuestDialogue{
+    "Zielarka",
+    {
+        "Straznik pyta o okolice?",
+        "Powiedz mu, ze na lace jest spokojnie, ale na dalsza wyprawe przydalby sie zapas ziol.",
+        "To wszystko, co moge dodac."
+    },
+    {}
+};
+
+const DialogueData herbalistAfterQuestDialogue{
+    "Zielarka",
+    {
+        "Jesli dalej pomagasz straznikowi, powiedz mu tez, zeby uwazal na zapasy.",
+        "Bez leczenia daleko nie zajdzie."
+    },
+    {}
+};
 }
 
 namespace DialogueDatabase
 {
-const DialogueData& GetTravelerDialogue()
-{
-    return travelerDialogue;
-}
+const DialogueData& GetTravelerDialogue() { return travelerDialogue; }
+const DialogueData& GetGuardDialogue() { return guardDialogue; }
+const DialogueData& GetGuardAfterDialogue() { return guardAfterDialogue; }
 
-const DialogueData& GetGuardDialogue()
-{
-    return guardDialogue;
-}
+const DialogueData& GetGuardQuestStartDialogue() { return guardQuestStartDialogue; }
+const DialogueData& GetGuardQuestInProgressDialogue() { return guardQuestInProgressDialogue; }
+const DialogueData& GetGuardQuestCompleteDialogue() { return guardQuestCompleteDialogue; }
+const DialogueData& GetGuardQuestFinishedDialogue() { return guardQuestFinishedDialogue; }
 
-const DialogueData& GetLadderGuideDialogue()
-{
-    return ladderGuideDialogue;
-}
+const DialogueData& GetLadderGuideDialogue() { return ladderGuideDialogue; }
+const DialogueData& GetHillWatcherDialogue() { return hillWatcherDialogue; }
+const DialogueData& GetHouseOwnerDialogue() { return houseOwnerDialogue; }
 
-const DialogueData& GetHillWatcherDialogue()
-{
-    return hillWatcherDialogue;
-}
+const DialogueData& GetCartographerDialogue() { return cartographerDialogue; }
+const DialogueData& GetCartographerQuestDialogue() { return cartographerQuestDialogue; }
+const DialogueData& GetCartographerAfterQuestDialogue() { return cartographerAfterQuestDialogue; }
 
-const DialogueData& GetHouseOwnerDialogue()
-{
-    return houseOwnerDialogue;
-}
-
-const DialogueData& GetCartographerDialogue()
-{
-    return cartographerDialogue;
-}
-
-const DialogueData& GetHerbalistDialogue()
-{
-    return herbalistDialogue;
-}
+const DialogueData& GetHerbalistDialogue() { return herbalistDialogue; }
+const DialogueData& GetHerbalistQuestDialogue() { return herbalistQuestDialogue; }
+const DialogueData& GetHerbalistAfterQuestDialogue() { return herbalistAfterQuestDialogue; }
 }

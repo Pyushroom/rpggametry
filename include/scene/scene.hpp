@@ -3,6 +3,7 @@
 #include <raylib.h>
 
 #include "dialogue/dialogue.hpp"
+#include "npc/npcData.hpp"
 
 #include <vector>
 
@@ -53,6 +54,7 @@ struct SceneObject
     const char* promptText{nullptr};
 
     const DialogueData* dialogueData{nullptr};
+    const NpcData* npcData{nullptr};
 
     bool hasTargetScene{false};
     SceneCoord targetSceneCoord{};
@@ -96,8 +98,7 @@ void DrawSceneInfo(const Scene& scene);
     float y,
     float width,
     float height,
-    const char* promptText,
-    const DialogueData* dialogueData);
+    const NpcData* npcData);
 [[nodiscard]] SceneObject MakeHouseEntrance(
     float x,
     float y,

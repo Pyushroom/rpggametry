@@ -160,6 +160,7 @@ SceneObject MakeWall(float x, float y, float width, float height)
         InteractionType::None,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -175,6 +176,7 @@ SceneObject MakeRock(float x, float y, float width, float height)
         false,
         GRAY,
         InteractionType::None,
+        nullptr,
         nullptr,
         nullptr,
         false,
@@ -200,6 +202,7 @@ SceneObject MakeLadder(
         InteractionType::Teleport,
         promptText,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
         targetPlayerPosition
@@ -215,6 +218,7 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         false,
         color,
         InteractionType::None,
+        nullptr,
         nullptr,
         nullptr,
         false,
@@ -234,6 +238,7 @@ SceneObject MakeBush(float x, float y, float width, float height)
         InteractionType::None,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
         Vector2{}
@@ -247,8 +252,9 @@ SceneObject MakeTree(float x, float y, float width, float height)
         Rectangle{x, y, width, height},
         true,
         false,
-        GREEN,
+        DARKGREEN,
         InteractionType::None,
+        nullptr,
         nullptr,
         nullptr,
         false,
@@ -262,18 +268,18 @@ SceneObject MakeNpc(
     float y,
     float width,
     float height,
-    const char* promptText,
-    const DialogueData* dialogueData)
+    const NpcData* npcData)
 {
     return SceneObject{
         SceneObjectType::Npc,
         Rectangle{x, y, width, height},
         true,
         true,
-        VIOLET,
+        npcData != nullptr ? npcData->color : VIOLET,
         InteractionType::Dialogue,
-        promptText,
-        dialogueData,
+        npcData != nullptr ? npcData->promptText : nullptr,
+        nullptr,
+        npcData,
         false,
         SceneCoord{},
         Vector2{}
@@ -297,6 +303,7 @@ SceneObject MakeHouseEntrance(
         MAROON,
         InteractionType::Teleport,
         promptText,
+        nullptr,
         nullptr,
         true,
         targetSceneCoord,

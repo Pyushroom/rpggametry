@@ -1,6 +1,6 @@
 #include "world/worldData.hpp"
+#include "npc/npcDatabase.hpp"
 
-#include "dialogue/dialogueDatabase.hpp"
 
 namespace WorldData
 {
@@ -25,8 +25,7 @@ std::vector<Scene> CreateScenes()
                 260.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetTravelerDialogue()),
+                &NpcDatabase::GetTravelerNpc()),
             MakeHouseEntrance(
                 80.0f,
                 260.0f,
@@ -67,8 +66,7 @@ std::vector<Scene> CreateScenes()
                 420.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetLadderGuideDialogue())
+                &NpcDatabase::GetLadderGuideNpc()),
         }
     });
 
@@ -87,8 +85,7 @@ std::vector<Scene> CreateScenes()
                 120.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetGuardDialogue()),
+                &NpcDatabase::GetGuardNpc()),
             MakeHouseEntrance(
                 780.0f,
                 420.0f,
@@ -130,8 +127,7 @@ std::vector<Scene> CreateScenes()
                 420.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetHillWatcherDialogue())
+                &NpcDatabase::GetHillWatcherNpc())
         }
     });
 
@@ -175,8 +171,7 @@ std::vector<Scene> CreateScenes()
                 240.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetHouseOwnerDialogue()),
+                &NpcDatabase::GetHouseOwnerNpc()),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,
@@ -206,8 +201,7 @@ std::vector<Scene> CreateScenes()
                 240.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetCartographerDialogue()),
+                &NpcDatabase::GetCartographerNpc()),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,
@@ -237,8 +231,7 @@ std::vector<Scene> CreateScenes()
                 260.0f,
                 40.0f,
                 60.0f,
-                "Nacisnij E, aby porozmawiac",
-                &DialogueDatabase::GetHerbalistDialogue()),
+                &NpcDatabase::GetHerbalistNpc()),
             MakeHouseEntrance(
                 440.0f,
                 470.0f,
