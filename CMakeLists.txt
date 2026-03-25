@@ -18,15 +18,18 @@ find_package(raylib CONFIG REQUIRED)
 
 set(SOURCES
     src/main.cpp
-    src/game/game.cpp
-    src/player/player.cpp
-    src/scene/scene.cpp
-    src/world/world.cpp
-    src/world/worldData.cpp
-    src/dialogue/dialogueDatabase.cpp
-    src/dialogue/dialogueController.cpp
-    src/npc/npcDatabase.cpp
-    src/game/gameState.cpp
+    src/game/Game.cpp
+    src/game/GameState.cpp
+    src/player/Player.cpp
+    src/scene/Scene.cpp
+    src/world/World.cpp
+    src/world/WorldData.cpp
+    src/dialogue/DialogueDatabase.cpp
+    src/dialogue/DialogueController.cpp
+    src/npc/NpcDatabase.cpp
+    src/quest/QuestDatabase.cpp
+    src/quest/QuestSystem.cpp
+    src/quest/QuestJournal.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

@@ -1,13 +1,12 @@
 #include "game/game.hpp"
-#
 
 #include <raylib.h>
 
 #include "config.hpp"
+#include "npc/npcDatabase.hpp"
+#include "quest/questSystem.hpp"
 
 #include <optional>
-
-
 
 Game::Game()
     : m_world{}
@@ -25,7 +24,7 @@ Game::Game()
 
 int Game::Run()
 {
-    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Dialogue Controller");
+    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Quest Journal");
     SetTargetFPS(60);
     SetExitKey(KEY_NULL);
 
@@ -60,6 +59,13 @@ void Game::Update(float deltaTime)
     if (m_dialogueController.IsActive())
     {
         m_dialogueController.Update();
+        return;
+    }
+
+    m_questJournal.Update(m_gameState);
+
+    if (m_questJournal.IsOpen())
+    {
         return;
     }
 
@@ -158,63 +164,45 @@ void Game::Draw() const
     DrawRectangleRec(m_player.rect, DARKGRAY);
     DrawSceneInfo(*currentScene);
 
-    if (ShouldDrawQuestTracker())
+    const QuestData* latestQuest = QuestSystem::GetLatestActiveQuest(m_gameState);
+    if (latestQuest != nullptr)
     {
-        DrawRectangle(12, 130, 420, 70, Fade(BLACK, 0.55f));
-        DrawRectangleLines(12, 130, 420, 70, WHITE);
-        DrawText("Dziennik zadania", 24, 140, 22, YELLOW);
-        DrawText(GetQuestTrackerText(), 24, 168, 20, WHITE);
+        DrawRectangle(12, 130, 460, 95, Fade(BLACK, 0.55f));
+        DrawRectangleLines(12, 130, 460, 95, WHITE);
+
+        DrawText("Aktualne zadanie", 24, 140, 22, YELLOW);
+        DrawText(latestQuest->title, 24, 166, 20, WHITE);
+
+        int y = 190;
+        for (const QuestObjective& objective : latestQuest->objectives)
+        {
+            const bool completed = QuestSystem::IsObjectiveCompleted(objective, m_gameState);
+
+            DrawText(
+                TextFormat("[%c] %s", completed ? 'x' : ' ', objective.description),
+                24,
+                y,
+                18,
+                completed ? GREEN : WHITE
+            );
+
+            y += 20;
+        }
     }
 
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
-    DrawText("E = interakcja", 20, Config::ScreenHeight - 30, 24, WHITE);
+    DrawText("E = interakcja, J = dziennik zadan", 20, Config::ScreenHeight - 30, 24, WHITE);
 
     if (!m_dialogueController.IsActive() &&
+        !m_questJournal.IsOpen() &&
         interactable != nullptr &&
         interactable->promptText != nullptr)
     {
-        DrawText(interactable->promptText, 20, 130, 24, YELLOW);
+        DrawText(interactable->promptText, 20, 240, 24, YELLOW);
     }
 
+    m_questJournal.Draw(m_gameState);
     m_dialogueController.Draw();
 
     EndDrawing();
-}
-bool Game::ShouldDrawQuestTracker() const
-{
-    return m_gameState.HasFlag("quest_guard_started") ||
-           m_gameState.HasFlag("quest_guard_finished");
-}
-
-const char* Game::GetQuestTrackerText() const
-{
-    if (m_gameState.HasFlag("quest_guard_finished"))
-    {
-        return "Quest: Pomoc dla straznika - UKONCZONO";
-    }
-
-    if (!m_gameState.HasFlag("quest_guard_started"))
-    {
-        return "";
-    }
-
-    const bool talkedToCartographer = m_gameState.HasFlag("talked_to_cartographer");
-    const bool talkedToHerbalist = m_gameState.HasFlag("talked_to_herbalist");
-
-    if (!talkedToCartographer && !talkedToHerbalist)
-    {
-        return "Quest: Porozmawiaj z kartografem i zielarka";
-    }
-
-    if (talkedToCartographer && !talkedToHerbalist)
-    {
-        return "Quest: Porozmawiaj z zielarka";
-    }
-
-    if (!talkedToCartographer && talkedToHerbalist)
-    {
-        return "Quest: Porozmawiaj z kartografem";
-    }
-
-    return "Quest: Wroc do straznika";
 }

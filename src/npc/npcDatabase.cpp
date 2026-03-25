@@ -11,6 +11,38 @@ const NpcData travelerNpc{
     VIOLET,
     "Nacisnij E, aby porozmawiac",
     {
+        // Quest zakonczony
+        NpcDialogueEntry{
+            {"quest_hill_finished"},
+            {},
+            &DialogueDatabase::GetTravelerQuestFinishedDialogue(),
+            nullptr
+        },
+
+        // Quest gotowy do oddania
+        NpcDialogueEntry{
+            {"quest_hill_started", "talked_to_hill_watcher"},
+            {"quest_hill_finished"},
+            &DialogueDatabase::GetTravelerQuestCompleteDialogue(),
+            "quest_hill_finished"
+        },
+
+        // Quest juz trwa
+        NpcDialogueEntry{
+            {"quest_hill_started"},
+            {"talked_to_hill_watcher", "quest_hill_finished"},
+            &DialogueDatabase::GetTravelerQuestInProgressDialogue(),
+            nullptr
+        },
+
+        // Pierwsza rozmowa - start questa
+        NpcDialogueEntry{
+            {},
+            {"quest_hill_started", "quest_hill_finished"},
+            &DialogueDatabase::GetTravelerQuestStartDialogue(),
+            "quest_hill_started"
+        },
+
         NpcDialogueEntry{
             {},
             {},
@@ -92,6 +124,22 @@ const NpcData hillWatcherNpc{
     PURPLE,
     "Nacisnij E, aby porozmawiac",
     {
+        // Po rozmowie w trakcie questa
+        NpcDialogueEntry{
+            {"quest_hill_started"},
+            {"talked_to_hill_watcher"},
+            &DialogueDatabase::GetHillWatcherQuestDialogue(),
+            "talked_to_hill_watcher"
+        },
+
+        // Potem zwykly tekst po queście / po wcześniejszej rozmowie
+        NpcDialogueEntry{
+            {"talked_to_hill_watcher"},
+            {},
+            &DialogueDatabase::GetHillWatcherAfterQuestDialogue(),
+            nullptr
+        },
+        // Domyslny
         NpcDialogueEntry{
             {},
             {},

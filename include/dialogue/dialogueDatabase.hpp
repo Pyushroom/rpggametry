@@ -23,4 +23,14 @@ const DialogueData& GetCartographerAfterQuestDialogue();
 const DialogueData& GetHerbalistDialogue();
 const DialogueData& GetHerbalistQuestDialogue();
 const DialogueData& GetHerbalistAfterQuestDialogue();
+
+
+const DialogueData& GetHillWatcherQuestDialogue();
+const DialogueData& GetHillWatcherAfterQuestDialogue();
+
+const DialogueData& GetTravelerQuestFinishedDialogue();
+const DialogueData& GetTravelerQuestCompleteDialogue();
+const DialogueData& GetTravelerQuestInProgressDialogue();
+const DialogueData& GetTravelerQuestStartDialogue();
+
 }
