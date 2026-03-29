@@ -11,4 +11,5 @@ struct EnemyData
     int attack{};
     int defense{};
     int expReward{};
+    bool isDefeated{};
 };

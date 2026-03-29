@@ -1,15 +1,12 @@
 #include "game/game.hpp"
 
 #include <raylib.h>
-#include <iostream>
 
 #include "config.hpp"
 #include "npc/npcDatabase.hpp"
 #include "quest/questSystem.hpp"
 
 #include <optional>
-
-// tworzenie świata i pobranie z config
 
 Game::Game()
     : m_world{}
@@ -27,9 +24,9 @@ Game::Game()
 
 int Game::Run()
 {
-    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Quest Journal");
+    InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Battle Prototype");
     SetTargetFPS(60);
-    SetExitKey(KEY_NULL); // zablokowanie zamykania przez esc
+    SetExitKey(KEY_NULL);
 
     while (!WindowShouldClose())
     {
@@ -54,30 +51,76 @@ int Game::Run()
 void Game::Update(float deltaTime)
 {
     const Scene* currentScene = m_world.FindScene(m_currentCoord);
-    if (IsKeyPressed(KEY_P))
-    {
-        std::cout << "Scene objects count: " << currentScene->objects.size() << std::endl;
-
-        for (const SceneObject& object : currentScene->objects)
-        {
-            std::cout
-                << "type=" << static_cast<int>(object.type)
-                << " x=" << object.rect.x
-                << " y=" << object.rect.y
-                << " w=" << object.rect.width
-                << " h=" << object.rect.height
-                << " enemyData=" << (object.enemyData != nullptr ? "yes" : "no")
-                << std::endl;
-        }
-    }
     if (currentScene == nullptr)
     {
         return;
     }
 
-    if(m_battleController.IsActive())
+    if (m_enemyEncounterCooldown > 0.0f)
+    {
+        m_enemyEncounterCooldown -= deltaTime;
+        if (m_enemyEncounterCooldown < 0.0f)
+        {
+            m_enemyEncounterCooldown = 0.0f;
+        }
+    }
+
+    if (m_battleController.IsActive())
     {
         m_battleController.Update();
+
+        if (!m_battleController.IsActive())
+        {
+            const BattleResult result = m_battleController.GetResult();
+
+            if (result == BattleResult::Victory)
+            {
+                Scene* battleScene = m_world.FindScene(m_battleSceneCoord);
+                if (battleScene != nullptr && m_activeEnemyIndex.has_value())
+                {
+                    const std::size_t index = *m_activeEnemyIndex;
+                    if (index < battleScene->objects.size())
+                    {
+                        battleScene->objects[index].isDefeated = true;
+                    }
+                }
+
+                m_enemyEncounterCooldown = 0.5f;
+            }
+            else if (result == BattleResult::Escape)
+            {
+                Scene* battleScene = m_world.FindScene(m_battleSceneCoord);
+                if (battleScene != nullptr && m_activeEnemyIndex.has_value())
+                {
+                    const std::size_t index = *m_activeEnemyIndex;
+                    if (index < battleScene->objects.size())
+                    {
+                        const Rectangle enemyRect = battleScene->objects[index].rect;
+
+                        Vector2 escapePosition{
+                            enemyRect.x - m_player.rect.width - 8.0f,
+                            m_player.rect.y
+                        };
+
+                        if (escapePosition.x < 0.0f)
+                        {
+                            escapePosition.x = enemyRect.x + enemyRect.width + 8.0f;
+                        }
+
+                        SetPlayerPosition(m_player, escapePosition);
+                    }
+                }
+
+                m_enemyEncounterCooldown = 0.5f;
+            }
+            else if (result == BattleResult::Defeat)
+            {
+                m_enemyEncounterCooldown = 0.5f;
+            }
+
+            m_activeEnemyIndex.reset();
+        }
+
         return;
     }
 
@@ -105,12 +148,23 @@ void Game::Update(float deltaTime)
 
     MovePlayer(m_player, *currentScene, deltaTime);
 
-    const SceneObject* enemyObject = FindEnemyCollision(m_player.rect, *currentScene);
-    if(enemyObject != nullptr && enemyObject->enemyData != nullptr)
+    if (m_enemyEncounterCooldown <= 0.0f)
     {
-        std::cout<<"Encountered enemy: " << enemyObject->enemyData->displayName << std::endl;
-        m_battleController.StartBattle(&m_playerStats, enemyObject->enemyData);
-        return;
+        const std::optional<std::size_t> enemyIndex =
+            FindEnemyCollisionIndex(m_player.rect, *currentScene);
+
+        if (enemyIndex.has_value())
+        {
+            const SceneObject& enemyObject = currentScene->objects[*enemyIndex];
+
+            if (enemyObject.enemyData != nullptr)
+            {
+                m_activeEnemyIndex = enemyIndex;
+                m_battleSceneCoord = m_currentCoord;
+                m_battleController.StartBattle(&m_playerStats, enemyObject.enemyData);
+                return;
+            }
+        }
     }
 
     if (IsKeyPressed(KEY_E))
@@ -228,6 +282,7 @@ void Game::Draw() const
 
     if (!m_dialogueController.IsActive() &&
         !m_questJournal.IsOpen() &&
+        !m_battleController.IsActive() &&
         interactable != nullptr &&
         interactable->promptText != nullptr)
     {

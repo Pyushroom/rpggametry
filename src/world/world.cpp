@@ -10,6 +10,19 @@ World::World()
 {
 }
 
+Scene* World::FindScene(const SceneCoord& coord)
+{
+    for (Scene& scene : m_scenes)
+    {
+        if (scene.coord == coord)
+        {
+            return &scene;
+        }
+    }
+
+    return nullptr;
+}
+
 const Scene* World::FindScene(const SceneCoord& coord) const
 {
     for (const Scene& scene : m_scenes)

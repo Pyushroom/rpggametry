@@ -12,6 +12,7 @@ class World
 public:
     World();
 
+    [[nodiscard]] Scene* FindScene(const SceneCoord& coord);
     [[nodiscard]] const Scene* FindScene(const SceneCoord& coord) const;
     [[nodiscard]] bool HasSceneAt(const SceneCoord& coord) const;
 

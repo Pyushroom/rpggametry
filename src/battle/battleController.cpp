@@ -176,6 +176,7 @@ void BattleController::Draw() const
         if (m_result == BattleResult::Victory)
         {
             DrawText("Wygrales walke!", 60, 470, 28, GREEN);
+            
         }
         else if (m_result == BattleResult::Defeat)
         {

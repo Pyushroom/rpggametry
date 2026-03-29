@@ -1,7 +1,6 @@
 #include "scene/scene.hpp"
 
 #include <raylib.h>
-#include <iostream>
 
 #include "config.hpp"
 
@@ -59,6 +58,11 @@ bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene)
             continue;
         }
 
+        if (object.type == SceneObjectType::Enemy && object.isDefeated)
+        {
+            continue;
+        }
+
         if (CheckCollisionRecs(rect, object.rect))
         {
             return true;
@@ -67,31 +71,36 @@ bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene)
 
     return false;
 }
-const SceneObject* FindEnemyCollision(const Rectangle& playerRect, const Scene& scene)
+
+std::optional<std::size_t> FindEnemyCollisionIndex(const Rectangle& playerRect, const Scene& scene)
 {
-    for (const SceneObject& object : scene.objects)
+    for (std::size_t index = 0; index < scene.objects.size(); ++index)
     {
+        const SceneObject& object = scene.objects[index];
+
         if (object.type != SceneObjectType::Enemy)
         {
             continue;
         }
-
 
         if (object.enemyData == nullptr)
         {
             continue;
         }
 
+        if (object.isDefeated)
+        {
+            continue;
+        }
+
         if (CheckCollisionRecs(playerRect, object.rect))
         {
-            std::cout << "[Enemy check] collision detected" << std::endl;
-            return &object;
+            return index;
         }
     }
 
-    return nullptr;
+    return std::nullopt;
 }
-
 
 const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, const Scene& scene)
 {
@@ -120,12 +129,15 @@ const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, con
     return nullptr;
 }
 
-
-
 void DrawSceneObjects(const Scene& scene)
 {
     for (const SceneObject& object : scene.objects)
     {
+        if (object.type == SceneObjectType::Enemy && object.isDefeated)
+        {
+            continue;
+        }
+
         DrawRectangleRec(object.rect, object.color);
 
         if (object.type == SceneObjectType::Ladder)
@@ -162,7 +174,13 @@ void DrawSceneObjects(const Scene& scene)
         else if (object.type == SceneObjectType::Enemy)
         {
             DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
-            DrawText("E", static_cast<int>(object.rect.x + 10.0f), static_cast<int>(object.rect.y + 8.0f), 20, WHITE);
+            DrawText(
+                "ENEMY",
+                static_cast<int>(object.rect.x),
+                static_cast<int>(object.rect.y - 18.0f),
+                18,
+                WHITE
+            );
         }
     }
 }
@@ -184,44 +202,26 @@ void DrawSceneInfo(const Scene& scene)
 
 SceneObject MakeWall(float x, float y, float width, float height)
 {
-    return SceneObject{
-        SceneObjectType::Wall,
-        Rectangle{x, y, width, height},
-        true,
-        false,
-        DARKGRAY,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Wall;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = true;
+    object.isInteractable = false;
+    object.color = DARKGRAY;
+    object.interactionType = InteractionType::None;
+    return object;
 }
 
 SceneObject MakeRock(float x, float y, float width, float height)
 {
-    return SceneObject{
-        SceneObjectType::Rock,
-        Rectangle{x, y, width, height},
-        true,
-        false,
-        GRAY,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Rock;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = true;
+    object.isInteractable = false;
+    object.color = GRAY;
+    object.interactionType = InteractionType::None;
+    return object;
 }
 
 SceneObject MakeLadder(
@@ -232,86 +232,52 @@ SceneObject MakeLadder(
     Vector2 targetPlayerPosition,
     const char* promptText)
 {
-    return SceneObject{
-        SceneObjectType::Ladder,
-        Rectangle{x, y, width, height},
-        false,
-        true,
-        BROWN,
-        InteractionType::Teleport,
-        promptText,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        targetPlayerPosition,
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Ladder;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = false;
+    object.isInteractable = true;
+    object.color = BROWN;
+    object.interactionType = InteractionType::Teleport;
+    object.promptText = promptText;
+    object.targetPlayerPosition = targetPlayerPosition;
+    return object;
 }
 
 SceneObject MakeDecoration(float x, float y, float width, float height, Color color)
 {
-    return SceneObject{
-        SceneObjectType::Decoration,
-        Rectangle{x, y, width, height},
-        false,
-        false,
-        color,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Decoration;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = false;
+    object.isInteractable = false;
+    object.color = color;
+    object.interactionType = InteractionType::None;
+    return object;
 }
 
 SceneObject MakeBush(float x, float y, float width, float height)
 {
-    return SceneObject{
-        SceneObjectType::Bush,
-        Rectangle{x, y, width, height},
-        true,
-        false,
-        DARKGREEN,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Bush;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = true;
+    object.isInteractable = false;
+    object.color = DARKGREEN;
+    object.interactionType = InteractionType::None;
+    return object;
 }
 
 SceneObject MakeTree(float x, float y, float width, float height)
 {
-    return SceneObject{
-        SceneObjectType::Tree,
-        Rectangle{x, y, width, height},
-        true,
-        false,
-        DARKGREEN,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Tree;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = true;
+    object.isInteractable = false;
+    object.color = GREEN;
+    object.interactionType = InteractionType::None;
+    return object;
 }
 
 SceneObject MakeNpc(
@@ -321,23 +287,35 @@ SceneObject MakeNpc(
     float height,
     const NpcData* npcData)
 {
-    return SceneObject{
-        SceneObjectType::Npc,
-        Rectangle{x, y, width, height},
-        true,
-        true,
-        npcData != nullptr ? npcData->color : VIOLET,
-        InteractionType::Dialogue,
-        npcData != nullptr ? npcData->promptText : nullptr,
-        nullptr,
-        npcData,
-        nullptr,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::Npc;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = true;
+    object.isInteractable = true;
+    object.color = npcData != nullptr ? npcData->color : VIOLET;
+    object.interactionType = InteractionType::Dialogue;
+    object.promptText = npcData != nullptr ? npcData->promptText : nullptr;
+    object.npcData = npcData;
+    return object;
+}
+
+SceneObject MakeEnemy(
+    float x,
+    float y,
+    float width,
+    float height,
+    const EnemyData* enemyData)
+{
+    SceneObject object{};
+    object.type = SceneObjectType::Enemy;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = false;
+    object.isInteractable = false;
+    object.color = RED;
+    object.interactionType = InteractionType::None;
+    object.enemyData = enemyData;
+    object.isDefeated = false;
+    return object;
 }
 
 SceneObject MakeHouseEntrance(
@@ -349,48 +327,16 @@ SceneObject MakeHouseEntrance(
     Vector2 targetPlayerPosition,
     const char* promptText)
 {
-    return SceneObject{
-        SceneObjectType::HouseEntrance,
-        Rectangle{x, y, width, height},
-        false,
-        true,
-        MAROON,
-        InteractionType::Teleport,
-        promptText,
-        nullptr,
-        nullptr,
-        nullptr,
-        true,
-        targetSceneCoord,
-        targetPlayerPosition,
-        false,
-        false
-    };
-}
-
-
-SceneObject MakeEnemy(
-    float x,
-    float y,
-    float width,
-    float height,
-    const EnemyData* enemyData)
-{
-    return SceneObject{
-        SceneObjectType::Enemy,
-        Rectangle{x, y, width, height},
-        false,
-        false,
-        RED,
-        InteractionType::None,
-        nullptr,
-        nullptr,
-        nullptr,
-        enemyData,
-        false,
-        SceneCoord{},
-        Vector2{},
-        false,
-        false
-    };
+    SceneObject object{};
+    object.type = SceneObjectType::HouseEntrance;
+    object.rect = Rectangle{x, y, width, height};
+    object.blocksMovement = false;
+    object.isInteractable = true;
+    object.color = MAROON;
+    object.interactionType = InteractionType::Teleport;
+    object.promptText = promptText;
+    object.hasTargetScene = true;
+    object.targetSceneCoord = targetSceneCoord;
+    object.targetPlayerPosition = targetPlayerPosition;
+    return object;
 }
