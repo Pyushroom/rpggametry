@@ -1,12 +1,15 @@
 #include "game/game.hpp"
 
 #include <raylib.h>
+#include <iostream>
 
 #include "config.hpp"
 #include "npc/npcDatabase.hpp"
 #include "quest/questSystem.hpp"
 
 #include <optional>
+
+// tworzenie świata i pobranie z config
 
 Game::Game()
     : m_world{}
@@ -26,7 +29,7 @@ int Game::Run()
 {
     InitWindow(Config::ScreenWidth, Config::ScreenHeight, "Overworld Prototype - Quest Journal");
     SetTargetFPS(60);
-    SetExitKey(KEY_NULL);
+    SetExitKey(KEY_NULL); // zablokowanie zamykania przez esc
 
     while (!WindowShouldClose())
     {
@@ -51,8 +54,30 @@ int Game::Run()
 void Game::Update(float deltaTime)
 {
     const Scene* currentScene = m_world.FindScene(m_currentCoord);
+    if (IsKeyPressed(KEY_P))
+    {
+        std::cout << "Scene objects count: " << currentScene->objects.size() << std::endl;
+
+        for (const SceneObject& object : currentScene->objects)
+        {
+            std::cout
+                << "type=" << static_cast<int>(object.type)
+                << " x=" << object.rect.x
+                << " y=" << object.rect.y
+                << " w=" << object.rect.width
+                << " h=" << object.rect.height
+                << " enemyData=" << (object.enemyData != nullptr ? "yes" : "no")
+                << std::endl;
+        }
+    }
     if (currentScene == nullptr)
     {
+        return;
+    }
+
+    if(m_battleController.IsActive())
+    {
+        m_battleController.Update();
         return;
     }
 
@@ -79,6 +104,14 @@ void Game::Update(float deltaTime)
     }
 
     MovePlayer(m_player, *currentScene, deltaTime);
+
+    const SceneObject* enemyObject = FindEnemyCollision(m_player.rect, *currentScene);
+    if(enemyObject != nullptr && enemyObject->enemyData != nullptr)
+    {
+        std::cout<<"Encountered enemy: " << enemyObject->enemyData->displayName << std::endl;
+        m_battleController.StartBattle(&m_playerStats, enemyObject->enemyData);
+        return;
+    }
 
     if (IsKeyPressed(KEY_E))
     {
@@ -203,6 +236,7 @@ void Game::Draw() const
 
     m_questJournal.Draw(m_gameState);
     m_dialogueController.Draw();
+    m_battleController.Draw();
 
     EndDrawing();
 }

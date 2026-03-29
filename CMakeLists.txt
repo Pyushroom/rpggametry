@@ -30,6 +30,8 @@ set(SOURCES
     src/quest/QuestDatabase.cpp
     src/quest/QuestSystem.cpp
     src/quest/QuestJournal.cpp
+    src/battle/BattleController.cpp
+    src/enemy/EnemyDatabase.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

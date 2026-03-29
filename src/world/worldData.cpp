@@ -1,5 +1,6 @@
 #include "world/worldData.hpp"
 #include "npc/npcDatabase.hpp"
+#include "enemy/enemyDatabase.hpp"
 
 
 namespace WorldData
@@ -20,6 +21,12 @@ std::vector<Scene> CreateScenes()
             MakeBush(320.0f, 420.0f, 80.0f, 60.0f),
             MakeBush(430.0f, 420.0f, 80.0f, 60.0f),
             MakeTree(760.0f, 120.0f, 90.0f, 140.0f),
+            MakeEnemy(
+                420.0f,
+                300.0f,
+                40.0f,
+                40.0f,
+                &EnemyDatabase::GetSlime()),
             MakeNpc(
                 260.0f,
                 260.0f,

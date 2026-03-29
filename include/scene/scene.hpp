@@ -4,6 +4,7 @@
 
 #include "dialogue/dialogue.hpp"
 #include "npc/npcData.hpp"
+#include "enemy/enemyData.hpp"
 
 #include <vector>
 
@@ -32,7 +33,8 @@ enum class SceneObjectType
     Bush,
     Tree,
     HouseEntrance,
-    Npc
+    Npc,
+    Enemy
 };
 
 enum class InteractionType
@@ -55,10 +57,13 @@ struct SceneObject
 
     const DialogueData* dialogueData{nullptr};
     const NpcData* npcData{nullptr};
+    const EnemyData* enemyData{nullptr};
 
     bool hasTargetScene{false};
     SceneCoord targetSceneCoord{};
     Vector2 targetPlayerPosition{};
+    bool isDefeated{false};
+    bool isBoss{false};
 };
 
 struct Scene
@@ -77,6 +82,7 @@ struct Scene
 
 [[nodiscard]] bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene);
 [[nodiscard]] const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, const Scene& scene);
+[[nodiscard]] const SceneObject* FindEnemyCollision(const Rectangle& playerRect, const Scene& scene);
 
 void DrawSceneObjects(const Scene& scene);
 void DrawSceneInfo(const Scene& scene);
@@ -107,3 +113,10 @@ void DrawSceneInfo(const Scene& scene);
     SceneCoord targetSceneCoord,
     Vector2 targetPlayerPosition,
     const char* promptText);
+
+[[nodiscard]] SceneObject MakeEnemy(
+    float x,
+    float y,
+    float width,
+    float height,
+    const EnemyData* enemyData);

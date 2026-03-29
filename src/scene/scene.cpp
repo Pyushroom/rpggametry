@@ -1,6 +1,7 @@
 #include "scene/scene.hpp"
 
 #include <raylib.h>
+#include <iostream>
 
 #include "config.hpp"
 
@@ -66,6 +67,31 @@ bool CollidesWithBlockingObjects(const Rectangle& rect, const Scene& scene)
 
     return false;
 }
+const SceneObject* FindEnemyCollision(const Rectangle& playerRect, const Scene& scene)
+{
+    for (const SceneObject& object : scene.objects)
+    {
+        if (object.type != SceneObjectType::Enemy)
+        {
+            continue;
+        }
+
+
+        if (object.enemyData == nullptr)
+        {
+            continue;
+        }
+
+        if (CheckCollisionRecs(playerRect, object.rect))
+        {
+            std::cout << "[Enemy check] collision detected" << std::endl;
+            return &object;
+        }
+    }
+
+    return nullptr;
+}
+
 
 const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, const Scene& scene)
 {
@@ -93,6 +119,8 @@ const SceneObject* FindInteractableObjectNearby(const Rectangle& playerRect, con
 
     return nullptr;
 }
+
+
 
 void DrawSceneObjects(const Scene& scene)
 {
@@ -131,6 +159,11 @@ void DrawSceneObjects(const Scene& scene)
         {
             DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
         }
+        else if (object.type == SceneObjectType::Enemy)
+        {
+            DrawRectangleLinesEx(object.rect, 2.0f, BLACK);
+            DrawText("E", static_cast<int>(object.rect.x + 10.0f), static_cast<int>(object.rect.y + 8.0f), 20, WHITE);
+        }
     }
 }
 
@@ -161,9 +194,12 @@ SceneObject MakeWall(float x, float y, float width, float height)
         nullptr,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -179,9 +215,12 @@ SceneObject MakeRock(float x, float y, float width, float height)
         nullptr,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -203,9 +242,12 @@ SceneObject MakeLadder(
         promptText,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        targetPlayerPosition
+        targetPlayerPosition,
+        false,
+        false
     };
 }
 
@@ -221,9 +263,12 @@ SceneObject MakeDecoration(float x, float y, float width, float height, Color co
         nullptr,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -239,9 +284,12 @@ SceneObject MakeBush(float x, float y, float width, float height)
         nullptr,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -257,9 +305,12 @@ SceneObject MakeTree(float x, float y, float width, float height)
         nullptr,
         nullptr,
         nullptr,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -280,9 +331,12 @@ SceneObject MakeNpc(
         npcData != nullptr ? npcData->promptText : nullptr,
         nullptr,
         npcData,
+        nullptr,
         false,
         SceneCoord{},
-        Vector2{}
+        Vector2{},
+        false,
+        false
     };
 }
 
@@ -305,8 +359,38 @@ SceneObject MakeHouseEntrance(
         promptText,
         nullptr,
         nullptr,
+        nullptr,
         true,
         targetSceneCoord,
-        targetPlayerPosition
+        targetPlayerPosition,
+        false,
+        false
+    };
+}
+
+
+SceneObject MakeEnemy(
+    float x,
+    float y,
+    float width,
+    float height,
+    const EnemyData* enemyData)
+{
+    return SceneObject{
+        SceneObjectType::Enemy,
+        Rectangle{x, y, width, height},
+        false,
+        false,
+        RED,
+        InteractionType::None,
+        nullptr,
+        nullptr,
+        nullptr,
+        enemyData,
+        false,
+        SceneCoord{},
+        Vector2{},
+        false,
+        false
     };
 }
