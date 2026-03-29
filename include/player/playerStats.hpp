@@ -8,4 +8,9 @@ struct PlayerStats
     int attack{10};
     int defense{5};
     int experience{0};
+    int expToNextLevel{100};
+
+    void AddExperience( int amount);
 };
+
+

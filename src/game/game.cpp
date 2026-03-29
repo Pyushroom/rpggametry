@@ -73,7 +73,7 @@ void Game::Update(float deltaTime)
         {
             const BattleResult result = m_battleController.GetResult();
 
-            if (result == BattleResult::Victory)
+             if (result == BattleResult::Victory)
             {
                 Scene* battleScene = m_world.FindScene(m_battleSceneCoord);
                 if (battleScene != nullptr && m_activeEnemyIndex.has_value())
@@ -82,6 +82,13 @@ void Game::Update(float deltaTime)
                     if (index < battleScene->objects.size())
                     {
                         battleScene->objects[index].isDefeated = true;
+
+                        if (battleScene->objects[index].enemyData != nullptr)
+                        {
+                            m_playerStats.AddExperience(
+                                battleScene->objects[index].enemyData->expReward
+                            );
+                        }
                     }
                 }
 
@@ -279,6 +286,16 @@ void Game::Draw() const
 
     DrawText("Ruch: WASD / strzalki", 20, Config::ScreenHeight - 60, 24, WHITE);
     DrawText("E = interakcja, J = dziennik zadan", 20, Config::ScreenHeight - 30, 24, WHITE);
+
+    DrawText(
+        TextFormat("Lvl %d  EXP: %d/%d",
+            m_playerStats.level,
+            m_playerStats.experience,
+            m_playerStats.expToNextLevel),
+        700,
+        40,
+        22,
+        WHITE);
 
     if (!m_dialogueController.IsActive() &&
         !m_questJournal.IsOpen() &&
